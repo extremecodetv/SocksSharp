@@ -14,9 +14,7 @@ after_build:
 test: off
 deploy:
   - provider: NuGet
-    server: https://www.myget.org/F/sockssharp/api/v2/package
     api_key:
-      secure: K+dcFuAQ7VnPljVdPE1t1IBtoaQh7QW4fCYhqLQH35UIrIEqXrbXFk9qOx8nzkIb
-    symbol_server: https://www.myget.org/F/sockssharp/api/v2/package
+      secure: XDyu2Wr5aDX3OW1GTJTSIq2y5wq5q8OFX9gJEHiRdwHGmCKNki/fI0vREBq1zYWR
     on:
-      branch: dev
+      branch: master
