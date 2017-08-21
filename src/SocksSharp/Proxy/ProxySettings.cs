@@ -7,16 +7,36 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Proxy
 {
+    /// <summary>
+    /// Represents the settings for <see cref="ProxyClient{T}"/>
+    /// </summary>
     public class ProxySettings :  IProxySettings, IProxySettingsFluent
     {
+        /// <summary>
+        /// Gets or sets the credentials to submit to the proxy server for authentication.
+        /// </summary>
         public NetworkCredential Credentials { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value of host or IP address for the proxy server
+        /// </summary>
         public string Host { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value of Port for the proxy server
+        /// </summary>
         public int Port { get; set; }
 
+        /// <summary>
+        /// Gets or sets the amount of time a <see cref="ProxyClient{T}"/>
+        /// will wait to connect to the proxy server
+        /// </summary>
         public int ConnectTimeout { get; set; } = 5000;
 
+        /// <summary>
+        /// Gets or sets the amount of time a <see cref="ProxyClient{T}"/>
+        /// will wait for read or wait data from the proxy server
+        /// </summary>
         public int ReadWriteTimeOut { get; set; } = 10000;
 
 #region Fluent
