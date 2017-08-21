@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Proxy
 {
+    /// <summary>
+    /// Represents errors that occur during proxy execution.
+    /// </summary>
     public class ProxyException : Exception
     {
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ProxyException"/> заданным сообщением об ошибке.
+        /// Initializes a new instance of the <see cref="ProxyException"/> with a specified error message 
+        /// and a reference to the inner exception that is the cause of this exception.
         /// </summary>
-        /// <param name="message">Сообщение об ошибке с объяснением причины исключения.</param>
-        /// <param name="innerException">Исключение, вызвавшее текущие исключение, или значение <see langword="null"/>.</param>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a <see langword="null"/> reference.</param>
         public ProxyException(string message, Exception innerException = null)
             : base(message, innerException) { }
         
