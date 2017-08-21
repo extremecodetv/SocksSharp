@@ -29,23 +29,59 @@ namespace SocksSharp
 
         #region Properties
 
+        /// <summary>
+        /// Current ProxyClient 
+        /// </summary>
         public IProxyClient<T> Proxy => proxyClient;
 
+        /// <summary>
+        /// Gets a value that indicates whether the handler uses a proxy for requests.
+        /// </summary>
         public bool UseProxy => true;
 
+        /// <summary>
+        /// Gets a value that indicates whether the handler supports proxy settings.
+        /// </summary>
+        public bool SupportsProxy => true;
+
+        /// <summary>
+        /// Gets a value that indicates whether the handler should follow redirection responses.
+        /// </summary>
         public bool AllowAutoRedirect => false;
 
+        /// <summary>
+        /// Gets a value that indicates whether the handler supports 
+        /// configuration settings for the <see cref="AllowAutoRedirect"/>
+        /// </summary>
+        public bool SupportsRedirectConfiguration => false;
+
+        /// <summary>
+        /// Gets the type of decompression method used by the handler for automatic 
+        /// decompression of the HTTP content response.
+        /// </summary>
+        /// <remarks>
+        /// Support GZip and Deflate encoding automatically
+        /// </remarks>
         public DecompressionMethods AutomaticDecompression
         {
             get => DecompressionMethods.GZip | DecompressionMethods.Deflate;
         }
 
-        // public ClientCertificateOption ClientCertificateOption { get; set; }
-
+        /// <summary>
+        /// Gets or sets a value that indicates whether the handler uses the CookieContainer
+        /// property to store server cookies and uses these cookies when sending requests.
+        /// </summary>
         public bool UseCookies { get; set; }
 
+        /// <summary>
+        /// Gets or sets the cookie container used to store server cookies by the handler.
+        /// </summary>
         public CookieContainer CookieContainer { get; set; }
 
+        /// <summary>
+        /// Gets or sets delegate to verifies the remote Secure Sockets Layer (SSL) 
+        /// certificate used for authentication.
+        /// </summary>
         public RemoteCertificateValidationCallback ServerCertificateCustomValidationCallback
         {
             get;
@@ -54,6 +90,13 @@ namespace SocksSharp
 
         #endregion
 
+        /// <summary>
+        /// Create instance of new ProxyClientHandler with <see cref="ProxySettings"/> settings
+        /// </summary>
+        /// <param name="proxySettings">Proxy settings</param>
+        /// <exception cref="ArgumentNullException">
+        /// Value of <see cref="proxySetting"/> is <see langword="null"/>
+        /// </exception>
         public ProxyClientHandler(ProxySettings proxySettings)
         {
             if(proxySettings == null)
@@ -65,8 +108,19 @@ namespace SocksSharp
             this.proxyClient.Settings = proxySettings;
         }
 
+        /// <summary>
+        /// Creates an instance of HttpResponseMessage based on the information provided in the HttpRequestMessage as an operation that will not block.
+        /// </summary>
+        /// <param name="request">The HTTP request message.</param>
+        /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
+        /// <returns></returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            if(request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             return await Task.Run(async () =>
             {
                 CreateConnection(request);
@@ -77,6 +131,8 @@ namespace SocksSharp
                 return responseMessage;
             });
         }
+
+        #region Methods (private)
 
         private async Task SendDataAsync(HttpRequestMessage request, CancellationToken ct)
         {
@@ -138,7 +194,6 @@ namespace SocksSharp
 
         private async Task SendContentAsync(HttpRequestMessage request, CancellationToken ct)
         {
-
             int offset = 0;
             int length = 1024;
             var buffer = await request.Content.ReadAsByteArrayAsync();
@@ -165,5 +220,7 @@ namespace SocksSharp
 
             base.Dispose(disposing);
         }
+
+        #endregion
     }
 }
