@@ -46,7 +46,6 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\ExceptionHelper.cs" />
     <Compile Include="Helpers\ReceiveHelper.cs" />
-    <Compile Include="Proxy\Clients\Http.cs" />
     <Compile Include="Proxy\IProxy.cs" />
     <Compile Include="Proxy\IProxyClient.cs" />
     <Compile Include="Proxy\IProxySettings.cs" />
