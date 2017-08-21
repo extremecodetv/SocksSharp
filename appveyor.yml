@@ -1,6 +1,6 @@
 version: 1.0.0-beta-{build}
 pull_requests:
-  do_not_increment_build_number: false
+  do_not_increment_build_number: true
 image: Visual Studio 2017
 configuration: Debug
 before_build:
@@ -17,4 +17,4 @@ deploy:
     api_key:
       secure: XDyu2Wr5aDX3OW1GTJTSIq2y5wq5q8OFX9gJEHiRdwHGmCKNki/fI0vREBq1zYWR
     on:
-      branch: master
+      branch: dev
