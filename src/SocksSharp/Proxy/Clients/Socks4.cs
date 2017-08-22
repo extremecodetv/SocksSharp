@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Proxy
 {
-    public class Socks4 : IProxy, IDisposable
+    public class Socks4 : IProxy
     {
         #region Константы (защищённые)
 

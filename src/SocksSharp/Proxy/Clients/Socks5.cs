@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Proxy
 {
-    public class Socks5 : IProxy, IDisposable
+    public class Socks5 : IProxy
     {        
         #region Constants
 
@@ -335,12 +335,7 @@ namespace SocksSharp.Proxy
                 //Resources.ProxyException_CommandError, errorMessage, ToString());
 
             throw new ProxyException(exceptionMsg);
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        }        
 
         #endregion
     }
