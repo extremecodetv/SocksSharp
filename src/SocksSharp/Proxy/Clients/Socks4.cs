@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SocksSharp.Helpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace SocksSharp.Proxy
 {
     public class Socks4 : IProxy
     {
-        #region Константы (защищённые)
+        #region Constants (protected)
 
         internal protected const int DefaultPort = 1080;
 
@@ -30,82 +31,66 @@ namespace SocksSharp.Proxy
         public Socks4() { }
 
         /// <summary>
-        /// Создаёт соединение с сервером через прокси-сервер.
+        /// Create connection to destination host via proxy server.
         /// </summary>
-        /// <param name="destinationHost">Хост сервера, с которым нужно связаться через прокси-сервер.</param>
-        /// <param name="destinationPort">Порт сервера, с которым нужно связаться через прокси-сервер.</param>
-        /// <param name="tcpClient">Соединение, через которое нужно работать, или значение <see langword="null"/>.</param>
-        /// <returns>Соединение с сервером через прокси-сервер.</returns>
-        /// <exception cref="System.InvalidOperationException">
-        /// Значение свойства <see cref="Host"/> равно <see langword="null"/> или имеет нулевую длину.
-        /// -или-
-        /// Значение свойства <see cref="Port"/> меньше 1 или больше 65535.
-        /// -или-
-        /// Значение свойства <see cref="Username"/> имеет длину более 255 символов.
-        /// -или-
-        /// Значение свойства <see cref="Password"/> имеет длину более 255 символов.
-        /// </exception>
-        /// <exception cref="System.ArgumentNullException">Значение параметра <paramref name="destinationHost"/> равно <see langword="null"/>.</exception>
-        /// <exception cref="System.ArgumentException">Значение параметра <paramref name="destinationHost"/> является пустой строкой.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Значение параметра <paramref name="destinationPort"/> меньше 1 или больше 65535.</exception>
-        /// <exception cref="xNet.Net.ProxyException">Ошибка при работе с прокси-сервером.</exception>
-        public override TcpClient CreateConnection(string destinationHost, int destinationPort, TcpClient tcpClient = null)
+        /// <param name="destinationHost">Host</param>
+        /// <param name="destinationPort">Port</param>
+        /// <param name="tcpClient">Connection with proxy server.</param>
+        /// <returns>Connection to destination host</returns>
+        /// <exception cref="System.ArgumentException">Value of <paramref name="destinationHost"/> is <see langword="null"/> or empty.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Value of <paramref name="destinationPort"/> less than 1 or greater than 65535.</exception>
+        /// <exception cref="ProxyException">Error while working with proxy.</exception>
+        public TcpClient CreateConnection(string destinationHost, int destinationPort, TcpClient client)
         {
-            #region Проверка параметров
-
-            if (destinationHost == null)
+            if (String.IsNullOrEmpty(destinationHost))
             {
-                throw new ArgumentNullException("destinationHost");
+                throw new ArgumentException(nameof(destinationHost));
             }
 
-            //if (destinationHost.Length == 0)
-            //{
-            //    throw ExceptionHelper.EmptyString("destinationHost");
-            //}
-
-            //if (!ExceptionHelper.ValidateTcpPort(destinationPort))
-            //{
-            //    throw ExceptionHelper.WrongTcpPort("destinationPort");
-            //}
-
-            #endregion
-
-            TcpClient curTcpClient = tcpClient;
-
-            if (curTcpClient == null)
+            if (!ExceptionHelper.ValidateTcpPort(destinationPort))
             {
-                //curTcpClient = CreateConnectionToProxy();
+                throw new ArgumentOutOfRangeException(nameof(destinationPort));
+            }
+
+            if (client == null && !client.Connected)
+            {
+                throw new SocketException();
             }
 
             try
             {
-                SendCommand(curTcpClient.GetStream(), CommandConnect, destinationHost, destinationPort);
+                SendCommand(client.GetStream(), CommandConnect, destinationHost, destinationPort);
             }
             catch (Exception ex)
             {
-                curTcpClient.Close();
+                client.Close();
 
                 if (ex is IOException || ex is SocketException)
                 {
-                    //throw NewProxyException(Resources.ProxyException_Error, ex);
+                    throw new ProxyException("Error while working with proxy", ex);
                 }
 
                 throw;
             }
 
-            return curTcpClient;
+            return client;
         }
 
-
-        #region Методы (внутренние защищённые)
+        #region Methods (protected)
 
         internal protected virtual void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
             byte[] dstPort = GetIPAddressBytes(destinationHost);
             byte[] dstIp = GetPortBytes(destinationPort);
 
-            byte[] userId = string.IsNullOrEmpty(_username) ?
-                new byte[0] : Encoding.ASCII.GetBytes(_username);
+            byte[] userId = new byte[0];
+            if (Settings.Credentials != null)
+            {
+                if (!String.IsNullOrEmpty(Settings.Credentials.UserName))
+                {
+                    userId = Encoding.ASCII.GetBytes(Settings.Credentials.UserName);
+                }
+            }
 
             // +----+----+----+----+----+----+----+----+----+----+....+----+
             // | VN | CD | DSTPORT |      DSTIP        | USERID       |NULL|
@@ -131,8 +116,7 @@ namespace SocksSharp.Proxy
             nStream.Read(response, 0, response.Length);
 
             byte reply = response[1];
-
-            // Если запрос не выполнен.
+            
             if (reply != CommandReplyRequestGranted)
             {
                 HandleCommandError(reply);
@@ -158,8 +142,7 @@ namespace SocksSharp.Proxy
                 {
                     if (ex is SocketException || ex is ArgumentException)
                     {
-                        //throw new ProxyException(string.Format(
-                            //Resources.ProxyException_FailedGetHostAddresses, destinationHost), this, ex);
+                        throw new ProxyException("Failed to get host address", ex);
                     }
 
                     throw;
@@ -186,26 +169,23 @@ namespace SocksSharp.Proxy
             switch (command)
             {
                 case CommandReplyRequestRejectedOrFailed:
-                    //errorMessage = Resources.Socks4_CommandReplyRequestRejectedOrFailed;
+                    errorMessage = "Request rejected or failed";
                     break;
 
                 case CommandReplyRequestRejectedCannotConnectToIdentd:
-                    //errorMessage = Resources.Socks4_CommandReplyRequestRejectedCannotConnectToIdentd;
+                    errorMessage = "Request rejected: cannot connect to identd";
                     break;
 
                 case CommandReplyRequestRejectedDifferentIdentd:
-                    //errorMessage = Resources.Socks4_CommandReplyRequestRejectedDifferentIdentd;
+                    errorMessage = "Request rejected: different identd";
                     break;
 
                 default:
-                    //errorMessage = Resources.Socks_UnknownError;
+                    errorMessage = "Unknown socks error";
                     break;
             }
 
-            //string exceptionMsg = string.Format(
-                //Resources.ProxyException_CommandError, errorMessage, ToString());
-
-            //throw new ProxyException(exceptionMsg, this);
+            throw new ProxyException(errorMessage);
         }
 
         #endregion
