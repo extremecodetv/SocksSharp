@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>SocksSharp</id>
+        <version>$APPVEYOR_BUILD_VERSION$</version>
+        <title>SocksSharp</title>
+        <authors>Artem Dontsov</authors>
+        <owners>ExtremeCode</owners>
+        <licenseUrl>https://github.com/extremecodetv/SocksSharp/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/extremecodetv/SocksSharp</projectUrl>
+        <iconUrl>https://camo.githubusercontent.com/ad1cacaaf72d2b7b85b7b35de25f5b30941b1a70/687474703a2f2f692e696d6775722e636f6d2f686831615a56552e706e67</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>SocksSharp provides support for Socks4/4a/5 proxy servers to HttpClient</description>
+        <tags>socks5, socks4, socks4a, proxy, httpclient</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5.2" />
+            <group targetFramework=".NETFramework4.6" />
+            <group targetFramework=".NETFramework4.6.1" />
+            <group targetFramework=".NETFramework4.6.2" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="repos\SocksSharp\src\SocksSharp\bin\Release\SocksSharp.dll" target="lib\SocksSharp.dll" />
+    </files>
+</package>
