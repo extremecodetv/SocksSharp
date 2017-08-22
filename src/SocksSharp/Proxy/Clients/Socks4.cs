@@ -1,12 +1,10 @@
-﻿using SocksSharp.Helpers;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.Net.Sockets;
+
+using SocksSharp.Helpers;
 
 namespace SocksSharp.Proxy
 {
