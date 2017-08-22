@@ -139,6 +139,13 @@ namespace SocksSharp.Proxy
         /// contains the instance of the <see cref="ProxySettings"/> value equivalent of the number contained in proxy, 
         /// if the conversion succeeded, or <see cref="null"/> if the conversion failed.</param>
         /// <returns><see cref="true"/> if s was converted successfully; otherwise, <see cref="false"/>.</returns>
+        /// <remarks>String must be in one of this format 
+        /// host:ip
+        /// - or -
+        /// host:ip:username
+        /// - or -
+        /// host:ip:username:password
+        /// </remarks>
         public static bool TryParse<TOutput>(string proxy, out IProxyClient<TOutput> proxyClient) where TOutput : IProxy
         {
             NetworkCredential credential = null;
