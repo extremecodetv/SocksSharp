@@ -21,6 +21,8 @@ namespace SocksSharp
         private Stream connectionCommonStream;
         private NetworkStream connectionNetworkStream;
 
+        private RemoteCertificateValidationCallback defaultSslValidator;
+
         #region Properties
 
         /// <summary>
@@ -76,10 +78,17 @@ namespace SocksSharp
         /// Gets or sets delegate to verifies the remote Secure Sockets Layer (SSL) 
         /// certificate used for authentication.
         /// </summary>
+        /// <exception cref="ArgumentNullException">Value cannot be null</exception>
         public RemoteCertificateValidationCallback ServerCertificateCustomValidationCallback
         {
-            get;
-            set;
+            get
+            {
+                return defaultSslValidator;
+            }
+            set
+            {
+                defaultSslValidator = value ?? throw new ArgumentNullException(nameof(ServerCertificateCustomValidationCallback));
+            }
         }
 
         #endregion
@@ -100,6 +109,7 @@ namespace SocksSharp
 
             this.proxyClient = (IProxyClient<T>)Activator.CreateInstance(typeof(ProxyClient<T>));
             this.proxyClient.Settings = proxySettings;
+            this.defaultSslValidator = GetDefaultSslValidationCallback();
         }
 
         /// <summary>
@@ -163,9 +173,7 @@ namespace SocksSharp
                 {
                     SslStream sslStream;
 
-                    sslStream = ServerCertificateCustomValidationCallback == null
-                        ? sslStream = new SslStream(connectionNetworkStream, false, null)
-                        : sslStream = new SslStream(connectionNetworkStream, false, ServerCertificateCustomValidationCallback);
+                    sslStream = new SslStream(connectionNetworkStream, false, ServerCertificateCustomValidationCallback);
 
                     sslStream.AuthenticateAsClient(uri.Host);
                     connectionCommonStream = sslStream;
@@ -202,6 +210,11 @@ namespace SocksSharp
                 await connectionCommonStream.WriteAsync(buffer, offset, length, ct);
                 offset += length;
             }
+        }
+
+        private RemoteCertificateValidationCallback GetDefaultSslValidationCallback()
+        {
+            return ServicePointManager.ServerCertificateValidationCallback;
         }
 
         protected override void Dispose(bool disposing)
