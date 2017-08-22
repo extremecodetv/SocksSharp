@@ -11,6 +11,7 @@ using System.IO;
 using System.Threading;
 using System.Net.Sockets;
 using System.IO.Compression;
+using System.Web;
 
 namespace SocksSharp.Proxy.Response
 {
@@ -22,10 +23,7 @@ namespace SocksSharp.Proxy.Response
 
             public byte[] Value { get; set; }
         }
-
-        // Данный класс используется при загрузки сжатых данных.
-        // Он позволяет определить точное количество считаных байт (сжатых данных).
-        // Это нужно, так как потоки для считывания сжатых данных сообщают количество байт уже преобразованных данных.
+        
         private sealed class ZipWraperStream : Stream
         {
             #region Поля (закрытые)
@@ -264,7 +262,7 @@ namespace SocksSharp.Proxy.Response
             }
             if (version.Length == 0 || statusCode.Length == 0)
             {
-                //throw NewHttpException(Resources.HttpException_ReceivedEmptyResponse);
+                throw new HttpException("Received empty response");
             }
 
             response.Version = Version.Parse(version);
