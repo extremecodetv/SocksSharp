@@ -26,7 +26,7 @@ namespace SocksSharp
         #region Properties
 
         /// <summary>
-        /// Current ProxyClient 
+        /// Gets a current ProxyClient 
         /// </summary>
         public IProxyClient<T> Proxy => proxyClient;
 
@@ -94,7 +94,7 @@ namespace SocksSharp
         #endregion
 
         /// <summary>
-        /// Create instance of new ProxyClientHandler with <see cref="ProxySettings"/> settings
+        /// Initializes a new instance of the <see cref="ProxyClientHandler{T}"/> with <see cref="ProxySettings"/> settings
         /// </summary>
         /// <param name="proxySettings">Proxy settings</param>
         /// <exception cref="ArgumentNullException">
