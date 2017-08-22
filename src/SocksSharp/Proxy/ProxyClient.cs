@@ -15,16 +15,19 @@ namespace SocksSharp.Proxy
     {
         private T client;        
         public ProxySettings Settings { get; set; }
-                        
+                     
+        /// <summary>
+        /// Initialize a new instance of the <see cref="ProxyClient{T}"/> with <see cref="IProxy"/> proxy handler
+        /// </summary>
         public ProxyClient()
         {
             this.client = (T) Activator.CreateInstance(typeof(T));
         }
-        
+
         /// <summary>
         /// Create connection via proxy to destination host
         /// </summary>
-        /// <returns>Destination host NetworkStream</returns>
+        /// <returns>Destination <see cref="NetworkStream"/></returns>
         /// <exception cref="System.InvalidOperationException">
         /// Value of <see cref="Host"/> equals <see langword="null"/> or empty.
         /// -or-
@@ -126,7 +129,17 @@ namespace SocksSharp.Proxy
 
     public static class ProxyClient
     {
-        public static bool TryParse<TOutput>(string proxyAddress, out IProxyClient<TOutput> proxyClient) where TOutput : IProxy
+        /// <summary>
+        /// Converts the string representation of a <see cref="ProxySettings"/>. 
+        /// A return value indicates whether the conversion succeeded.
+        /// </summary>
+        /// <typeparam name="TOutput">Implementation of the <see cref="IProxy"/></typeparam>
+        /// <param name="proxy">A string containing proxy settings</param>
+        /// <param name="proxyClient">When this method returns,
+        /// contains the instance of the <see cref="ProxySettings"/> value equivalent of the number contained in proxy, 
+        /// if the conversion succeeded, or <see cref="null"/> if the conversion failed.</param>
+        /// <returns><see cref="true"/> if s was converted successfully; otherwise, <see cref="false"/>.</returns>
+        public static bool TryParse<TOutput>(string proxy, out IProxyClient<TOutput> proxyClient) where TOutput : IProxy
         {
             NetworkCredential credential = null;
 
@@ -134,12 +147,12 @@ namespace SocksSharp.Proxy
 
             #region Parse Address
 
-            if (String.IsNullOrEmpty(proxyAddress))
+            if (String.IsNullOrEmpty(proxy))
             {
                 return false;
             }
 
-            string[] values = proxyAddress.Split(':');
+            string[] values = proxy.Split(':');
 
             int port = 1080;
             string host = values[0];
@@ -189,7 +202,6 @@ namespace SocksSharp.Proxy
 
             try
             {
-
                 proxyClient = (IProxyClient<TOutput>)Activator.CreateInstance(typeof(ProxyClient<TOutput>));
                 proxyClient.Settings = proxySettings;
             }
