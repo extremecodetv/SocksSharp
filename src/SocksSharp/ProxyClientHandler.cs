@@ -196,6 +196,11 @@ namespace SocksSharp
 
         private async Task SendContentAsync(HttpRequestMessage request, CancellationToken ct)
         {
+            if(request.Content == null)
+            {
+                return;
+            }
+
             int offset = 0;
             int length = 1024;
             var buffer = await request.Content.ReadAsByteArrayAsync();
