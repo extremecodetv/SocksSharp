@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Proxy
 {
-    public class ProxyClient<T> : IProxyClient<T>, IDisposable where T : IProxy
+    public class ProxyClient<T> : IProxyClient<T> where T : IProxy
     {
         private T client;        
         public ProxySettings Settings { get; set; }
@@ -119,12 +119,7 @@ namespace SocksSharp.Proxy
 
             return connectedTcpClient.GetStream();
         }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-                
+                        
     }
 
     public static class ProxyClient
