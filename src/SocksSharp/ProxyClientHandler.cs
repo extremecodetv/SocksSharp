@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Web;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -20,8 +21,6 @@ namespace SocksSharp
 
         private Stream connectionCommonStream;
         private NetworkStream connectionNetworkStream;
-
-        private RemoteCertificateValidationCallback defaultSslValidator;
 
         #region Properties
 
@@ -78,18 +77,7 @@ namespace SocksSharp
         /// Gets or sets delegate to verifies the remote Secure Sockets Layer (SSL) 
         /// certificate used for authentication.
         /// </summary>
-        /// <exception cref="ArgumentNullException">Value cannot be null</exception>
-        public RemoteCertificateValidationCallback ServerCertificateCustomValidationCallback
-        {
-            get
-            {
-                return defaultSslValidator;
-            }
-            set
-            {
-                defaultSslValidator = value ?? throw new ArgumentNullException(nameof(ServerCertificateCustomValidationCallback));
-            }
-        }
+        public RemoteCertificateValidationCallback ServerCertificateCustomValidationCallback { get; set; }
 
         #endregion
 
@@ -109,7 +97,6 @@ namespace SocksSharp
 
             this.proxyClient = (IProxyClient<T>)Activator.CreateInstance(typeof(ProxyClient<T>));
             this.proxyClient.Settings = proxySettings;
-            this.defaultSslValidator = GetDefaultSslValidationCallback();
         }
 
         /// <summary>
@@ -182,7 +169,7 @@ namespace SocksSharp
                 {
                     if (ex is IOException || ex is AuthenticationException)
                     {
-                        // throw NewHttpException(Resources.HttpException_FailedSslConnect, ex, HttpExceptionStatus.ConnectFailure);
+                         throw new HttpException("Failed SSL connect");
                     }
 
                     throw;
@@ -216,12 +203,7 @@ namespace SocksSharp
                 offset += length;
             }
         }
-
-        private RemoteCertificateValidationCallback GetDefaultSslValidationCallback()
-        {
-            return ServicePointManager.ServerCertificateValidationCallback;
-        }
-
+        
         protected override void Dispose(bool disposing)
         {
             if (disposing)
