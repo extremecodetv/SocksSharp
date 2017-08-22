@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SocksSharp.Proxy
 {
     public class Socks5 : IProxy
-    {        
+    {
         #region Constants
 
         private const int DefaultPort = 1080;
@@ -45,7 +45,7 @@ namespace SocksSharp.Proxy
         private const byte AddressTypeIPV6 = 0x04;
 
         #endregion
-        
+
         public IProxySettings Settings { get; set; }
 
         public Socks5() { }
@@ -71,12 +71,12 @@ namespace SocksSharp.Proxy
             {
                 throw new ArgumentOutOfRangeException(nameof(destinationPort));
             }
-            
+
             if (client == null && !client.Connected)
             {
                 throw new SocketException();
             }
-            
+
             try
             {
                 NetworkStream nStream = client.GetStream();
@@ -221,7 +221,7 @@ namespace SocksSharp.Proxy
 
             nStream.Read(response, 0, response.Length);
 
-            byte reply = response[1];            
+            byte reply = response[1];
             if (reply != CommandReplySucceeded)
             {
                 HandleCommandError(reply);
@@ -291,51 +291,48 @@ namespace SocksSharp.Proxy
             switch (command)
             {
                 case AuthMethodReplyNoAcceptableMethods:
-                   // errorMessage = Resources.Socks5_AuthMethodReplyNoAcceptableMethods;
+                    errorMessage = "Auth failed: not acceptable method";
                     break;
 
                 case CommandReplyGeneralSocksServerFailure:
-                   // errorMessage = Resources.Socks5_CommandReplyGeneralSocksServerFailure;
+                    errorMessage = "General socks server failure";
                     break;
 
                 case CommandReplyConnectionNotAllowedByRuleset:
-                 //   errorMessage = Resources.Socks5_CommandReplyConnectionNotAllowedByRuleset;
+                    errorMessage = "Connection not allowed by ruleset";
                     break;
 
                 case CommandReplyNetworkUnreachable:
-                  //  errorMessage = Resources.Socks5_CommandReplyNetworkUnreachable;
+                    errorMessage = "Network unreachable";
                     break;
 
                 case CommandReplyHostUnreachable:
-                   // errorMessage = Resources.Socks5_CommandReplyHostUnreachable;
+                    errorMessage = "Host unreachable";
                     break;
 
                 case CommandReplyConnectionRefused:
-                  //  errorMessage = Resources.Socks5_CommandReplyConnectionRefused;
+                    errorMessage = "Connection refused";
                     break;
 
                 case CommandReplyTTLExpired:
-                  //  errorMessage = Resources.Socks5_CommandReplyTTLExpired;
+                    errorMessage = "TTL Expired";
                     break;
 
                 case CommandReplyCommandNotSupported:
-                   // errorMessage = Resources.Socks5_CommandReplyCommandNotSupported;
+                    errorMessage = "Command not supported";
                     break;
 
                 case CommandReplyAddressTypeNotSupported:
-                   // errorMessage = Resources.Socks5_CommandReplyAddressTypeNotSupported;
+                    errorMessage = "Address type not supported";
                     break;
 
                 default:
-                   // errorMessage = Resources.Socks_UnknownError;
+                    errorMessage = "Unknown socks error";
                     break;
             }
 
-            string exceptionMsg = "";// string.Format(
-                //Resources.ProxyException_CommandError, errorMessage, ToString());
-
-            throw new ProxyException(exceptionMsg);
-        }        
+            throw new ProxyException(errorMessage);
+        }
 
         #endregion
     }
