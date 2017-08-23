@@ -128,6 +128,7 @@ namespace SocksSharp
         private async Task SendDataAsync(HttpRequestMessage request, CancellationToken ct)
         {
             byte[] buffer;
+            var hasContent = request.Content != null;
             var requestBuilder = new RequestBuilder(request);
 
             //Send starting line
@@ -135,7 +136,7 @@ namespace SocksSharp
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
 
             //Send headers
-            buffer = requestBuilder.BuildHeaders();
+            buffer = requestBuilder.BuildHeaders(hasContent);
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
 
             //Send Content

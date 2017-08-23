@@ -11,6 +11,9 @@ namespace SocksSharp.Extensions
     {
         private static readonly string separator = " ";
 
+        /// <summary>
+        /// TODO: Is not working correct
+        /// </summary>
         public static string GetHeaderString(this HttpHeaders headers, string key)
         {
             if(headers == null)
