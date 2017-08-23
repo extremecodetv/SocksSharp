@@ -1,11 +1,10 @@
-﻿using SocksSharp.Extensions;
-using SocksSharp.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System;
 using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Collections.Generic;
+
+using SocksSharp.Extensions;
+using SocksSharp.Helpers;
 
 namespace SocksSharp.Proxy.Request
 {
@@ -32,7 +31,7 @@ namespace SocksSharp.Proxy.Request
             return ToByteArray(startingLine);
         }
 
-        public byte[] BuildHeaders()
+        public byte[] BuildHeaders(bool hasContent)
         {
             var headersList = new List<string>();
             var headers = request.Headers;
@@ -71,7 +70,15 @@ namespace SocksSharp.Proxy.Request
 
             var rawHeaders = String.Join("\r\n", headersList.ToArray());
 
-            return ToByteArray(rawHeaders + newLine);
+            if (hasContent)
+            {
+                return ToByteArray(rawHeaders + newLine);
+            }
+            else
+            {
+                return ToByteArray(rawHeaders + newLine + newLine);
+            }
+
         }
         
         private byte[] ToByteArray(string data)
