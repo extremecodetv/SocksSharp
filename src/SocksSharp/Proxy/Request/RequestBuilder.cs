@@ -1,4 +1,5 @@
 ﻿using SocksSharp.Extensions;
+using SocksSharp.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace SocksSharp.Proxy.Request
 
             foreach (var header in headers)
             {
-                if (String.Equals(header.Key, "Content-Length", StringComparison.OrdinalIgnoreCase))
+                if (ContentHelper.IsContentHeader(header.Key))
                 {
                     continue;
                 }
