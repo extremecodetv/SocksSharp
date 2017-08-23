@@ -185,7 +185,9 @@ namespace SocksSharp.Proxy.Response
 
         private int contentLength;
 
-        private NetworkStream stream;
+        private NetworkStream networkStream;
+        private Stream commonStream;
+
         private HttpResponseMessage response;
         private Dictionary<string, List<string>> contentHeaders;
 
@@ -202,16 +204,18 @@ namespace SocksSharp.Proxy.Response
             receiveHelper = new ReceiveHelper(bufferSize);
         }
 
-        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, NetworkStream stream)
+        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, Stream stream)
         {
             return GetResponseAsync(request, stream, CancellationToken.None);
         }
 
-        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, NetworkStream stream, CancellationToken cancellationToken)
+        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, Stream stream, CancellationToken cancellationToken)
         {
-            this.stream = stream;
-            this.cancellationToken = cancellationToken;
+            this.networkStream = stream as NetworkStream;
+            this.commonStream  = stream;
 
+            this.cancellationToken = cancellationToken;
+            
             receiveHelper.Init(stream);
 
             response = new HttpResponseMessage();
@@ -350,7 +354,7 @@ namespace SocksSharp.Proxy.Response
                 response.Content = new StreamContent(memoryStream);
                 foreach(var pair in contentHeaders)
                 {
-                    response.Content.Headers.Add(pair.Key, pair.Value);
+                    response.Content.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
                 }
             }
         }
@@ -378,7 +382,7 @@ namespace SocksSharp.Proxy.Response
                 return ReceiveMessageBodyZip(contentLength);
             }
 
-            var streamWrapper = new ZipWraperStream(stream, receiveHelper);
+            var streamWrapper = new ZipWraperStream(commonStream, receiveHelper);
 
             return ReceiveMessageBody(GetZipStream(streamWrapper));
         }
@@ -395,7 +399,7 @@ namespace SocksSharp.Proxy.Response
                 return ReceiveMessageBody(contentLength);
             }
 
-            return ReceiveMessageBody(stream);
+            return ReceiveMessageBody(commonStream);
         }
 
         private int GetContentLength()
@@ -433,11 +437,12 @@ namespace SocksSharp.Proxy.Response
             int delay = (ReceiveTimeout < 10) ?
                 10 : ReceiveTimeout;
 
-            while (!stream.DataAvailable)
+            var dataAvailable = networkStream?.DataAvailable;
+            while (dataAvailable.HasValue && !dataAvailable.Value)
             {
                 if (sleepTime >= delay)
                 {
-                    //throw NewHttpException(Resources.HttpException_WaitDataTimeout);
+                    throw new ProxyException("Wait data timeout");
                 }
 
                 sleepTime += 10;
@@ -553,7 +558,7 @@ namespace SocksSharp.Proxy.Response
                 }
                 else
                 {
-                    bytesRead = stream.Read(buffer, 0, bufferSize);
+                    bytesRead = commonStream.Read(buffer, 0, bufferSize);
                 }
                 if (bytesRead == 0)
                 {
@@ -619,7 +624,7 @@ namespace SocksSharp.Proxy.Response
                     }
                     else
                     {
-                        bytesRead = stream.Read(buffer, 0, length);
+                        bytesRead = commonStream.Read(buffer, 0, length);
                     }
                     if (bytesRead == 0)
                     {
@@ -638,7 +643,7 @@ namespace SocksSharp.Proxy.Response
         private IEnumerable<BytesWraper> ReceiveMessageBodyZip(int contentLength)
         {
             var bytesWraper = new BytesWraper();
-            var streamWrapper = new ZipWraperStream(stream, receiveHelper);
+            var streamWrapper = new ZipWraperStream(commonStream, receiveHelper);
             using (Stream stream = GetZipStream(streamWrapper))
             {
                 byte[] buffer = new byte[bufferSize];
@@ -668,7 +673,7 @@ namespace SocksSharp.Proxy.Response
         private IEnumerable<BytesWraper> ReceiveMessageBodyChunkedZip()
         {
             var bytesWraper = new BytesWraper();
-            var streamWrapper = new ZipWraperStream(stream, receiveHelper);
+            var streamWrapper = new ZipWraperStream(commonStream, receiveHelper);
 
             using (Stream stream = GetZipStream(streamWrapper))
             {

@@ -145,7 +145,7 @@ namespace SocksSharp
         private async Task<HttpResponseMessage> ReceiveDataAsync(HttpRequestMessage request, CancellationToken ct)
         {
             var responseBuilder = new ResponseBuilder(1024);
-            return await responseBuilder.GetResponseAsync(request, connectionNetworkStream, ct);
+            return await responseBuilder.GetResponseAsync(request, connectionCommonStream, ct);
         }
 
         private void CreateConnection(HttpRequestMessage request)

@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,6 +47,8 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\ExceptionHelper.cs" />
     <Compile Include="Helpers\ReceiveHelper.cs" />
+    <Compile Include="Proxy\Clients\Socks4.cs" />
+    <Compile Include="Proxy\Clients\Socks4a.cs" />
     <Compile Include="Proxy\IProxy.cs" />
     <Compile Include="Proxy\IProxyClient.cs" />
     <Compile Include="Proxy\IProxySettings.cs" />

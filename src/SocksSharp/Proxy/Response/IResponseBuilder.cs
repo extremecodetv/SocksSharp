@@ -14,8 +14,8 @@ namespace SocksSharp.Proxy.Response
     {
         int ReceiveTimeout { get; set; }
 
-        Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, NetworkStream stream);
+        Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, Stream stream);
 
-        Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, NetworkStream stream, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, Stream stream, CancellationToken cancellationToken);
     }
 }
