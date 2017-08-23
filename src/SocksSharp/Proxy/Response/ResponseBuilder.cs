@@ -1,17 +1,39 @@
-﻿using SocksSharp.Helpers;
+﻿/*
+Copyright © 2012-2015 Ruslan Khuduev <x-rus@list.ru>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+ */
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using SocksSharp.Extensions;
-using System.Net;
 using System.IO;
+using System.Web;
+using System.Net;
+using System.Text;
+using System.Net.Http;
 using System.Threading;
 using System.Net.Sockets;
 using System.IO.Compression;
-using System.Web;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using SocksSharp.Extensions;
+using SocksSharp.Helpers;
 
 namespace SocksSharp.Proxy.Response
 {
@@ -185,7 +207,9 @@ namespace SocksSharp.Proxy.Response
 
         private int contentLength;
 
-        private NetworkStream stream;
+        private NetworkStream networkStream;
+        private Stream commonStream;
+
         private HttpResponseMessage response;
         private Dictionary<string, List<string>> contentHeaders;
 
@@ -202,16 +226,18 @@ namespace SocksSharp.Proxy.Response
             receiveHelper = new ReceiveHelper(bufferSize);
         }
 
-        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, NetworkStream stream)
+        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, Stream stream)
         {
             return GetResponseAsync(request, stream, CancellationToken.None);
         }
 
-        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, NetworkStream stream, CancellationToken cancellationToken)
+        public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, Stream stream, CancellationToken cancellationToken)
         {
-            this.stream = stream;
-            this.cancellationToken = cancellationToken;
+            this.networkStream = stream as NetworkStream;
+            this.commonStream  = stream;
 
+            this.cancellationToken = cancellationToken;
+            
             receiveHelper.Init(stream);
 
             response = new HttpResponseMessage();
@@ -262,7 +288,7 @@ namespace SocksSharp.Proxy.Response
             }
             if (version.Length == 0 || statusCode.Length == 0)
             {
-                throw new HttpException("Received empty response");
+                throw new ProxyException("Received empty response");
             }
 
             response.Version = Version.Parse(version);
@@ -292,7 +318,7 @@ namespace SocksSharp.Proxy.Response
                 {
                     //SetCookie(headerValue);
                 }
-                else if (IsContentHeader(headerName))
+                else if (ContentHelper.IsContentHeader(headerName))
                 {
                     List<string> values;
                     if (contentHeaders.TryGetValue(headerName, out values))
@@ -350,7 +376,7 @@ namespace SocksSharp.Proxy.Response
                 response.Content = new StreamContent(memoryStream);
                 foreach(var pair in contentHeaders)
                 {
-                    response.Content.Headers.Add(pair.Key, pair.Value);
+                    response.Content.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
                 }
             }
         }
@@ -378,7 +404,7 @@ namespace SocksSharp.Proxy.Response
                 return ReceiveMessageBodyZip(contentLength);
             }
 
-            var streamWrapper = new ZipWraperStream(stream, receiveHelper);
+            var streamWrapper = new ZipWraperStream(commonStream, receiveHelper);
 
             return ReceiveMessageBody(GetZipStream(streamWrapper));
         }
@@ -395,7 +421,7 @@ namespace SocksSharp.Proxy.Response
                 return ReceiveMessageBody(contentLength);
             }
 
-            return ReceiveMessageBody(stream);
+            return ReceiveMessageBody(commonStream);
         }
 
         private int GetContentLength()
@@ -433,37 +459,17 @@ namespace SocksSharp.Proxy.Response
             int delay = (ReceiveTimeout < 10) ?
                 10 : ReceiveTimeout;
 
-            while (!stream.DataAvailable)
+            var dataAvailable = networkStream?.DataAvailable;
+            while (dataAvailable.HasValue && !dataAvailable.Value)
             {
                 if (sleepTime >= delay)
                 {
-                    //throw NewHttpException(Resources.HttpException_WaitDataTimeout);
+                    throw new ProxyException("Wait data timeout");
                 }
 
                 sleepTime += 10;
                 Thread.Sleep(10);
             }
-        }
-
-        private bool IsContentHeader(string name)
-        {
-            //https://github.com/dotnet/corefx/blob/3e72ee5971db5d0bd46606fa672969adde29e307/src/System.Net.Http/src/System/Net/Http/Headers/KnownHeaders.cs
-
-            var contentHeaders = new string[]
-            {
-                "Last-Modified",
-                "Expires",
-                "Content-Type",
-                "Content-Range",
-                "Content-MD5",
-                "Content-Location",
-                "Content-Length",
-                "Content-Language",
-                "Content-Encoding",
-                "Allow"
-            };
-
-            return contentHeaders.Contains(name);
         }
 
         #region Receive Content (F*cking trash, but works (not sure (really)))
@@ -553,7 +559,7 @@ namespace SocksSharp.Proxy.Response
                 }
                 else
                 {
-                    bytesRead = stream.Read(buffer, 0, bufferSize);
+                    bytesRead = commonStream.Read(buffer, 0, bufferSize);
                 }
                 if (bytesRead == 0)
                 {
@@ -619,7 +625,7 @@ namespace SocksSharp.Proxy.Response
                     }
                     else
                     {
-                        bytesRead = stream.Read(buffer, 0, length);
+                        bytesRead = commonStream.Read(buffer, 0, length);
                     }
                     if (bytesRead == 0)
                     {
@@ -638,7 +644,7 @@ namespace SocksSharp.Proxy.Response
         private IEnumerable<BytesWraper> ReceiveMessageBodyZip(int contentLength)
         {
             var bytesWraper = new BytesWraper();
-            var streamWrapper = new ZipWraperStream(stream, receiveHelper);
+            var streamWrapper = new ZipWraperStream(commonStream, receiveHelper);
             using (Stream stream = GetZipStream(streamWrapper))
             {
                 byte[] buffer = new byte[bufferSize];
@@ -668,7 +674,7 @@ namespace SocksSharp.Proxy.Response
         private IEnumerable<BytesWraper> ReceiveMessageBodyChunkedZip()
         {
             var bytesWraper = new BytesWraper();
-            var streamWrapper = new ZipWraperStream(stream, receiveHelper);
+            var streamWrapper = new ZipWraperStream(commonStream, receiveHelper);
 
             using (Stream stream = GetZipStream(streamWrapper))
             {

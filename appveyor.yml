@@ -6,8 +6,8 @@ configuration: Debug
 before_build:
   - nuget restore SocksSharp.sln
 build:
-  publish_nuget: true
-  publish_nuget_symbols: true
+  publish_nuget: false
+  publish_nuget_symbols: false
   verbosity: normal
   
 test: off

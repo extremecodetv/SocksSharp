@@ -44,8 +44,11 @@
   <ItemGroup>
     <Compile Include="Extensions\HttpHeadersExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Helpers\ContentHelper.cs" />
     <Compile Include="Helpers\ExceptionHelper.cs" />
     <Compile Include="Helpers\ReceiveHelper.cs" />
+    <Compile Include="Proxy\Clients\Socks4.cs" />
+    <Compile Include="Proxy\Clients\Socks4a.cs" />
     <Compile Include="Proxy\IProxy.cs" />
     <Compile Include="Proxy\IProxyClient.cs" />
     <Compile Include="Proxy\IProxySettings.cs" />
@@ -56,7 +59,6 @@
     <Compile Include="Proxy\ProxyException.cs" />
     <Compile Include="Proxy\ProxySettings.cs" />
     <Compile Include="Proxy\Clients\Socks5.cs" />
-    <Compile Include="Proxy\Request\IRequestBuilder.cs" />
     <Compile Include="Proxy\Request\RequestBuilder.cs" />
     <Compile Include="Proxy\Response\IResponseBuilder.cs" />
     <Compile Include="Proxy\Response\ResponseBuilder.cs" />

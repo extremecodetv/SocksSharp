@@ -1,14 +1,15 @@
-﻿using SocksSharp.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System;
 using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
+using System.Collections.Generic;
+
+using SocksSharp.Extensions;
+using SocksSharp.Helpers;
+using System.Net.Http.Headers;
 
 namespace SocksSharp.Proxy.Request
 {
-    internal class RequestBuilder : IRequestBuilder
+    internal class RequestBuilder
     {
         private readonly string newLine = "\r\n";
 
@@ -31,18 +32,24 @@ namespace SocksSharp.Proxy.Request
             return ToByteArray(startingLine);
         }
 
-        public byte[] BuildHeaders()
+        public byte[] BuildHeaders(bool hasContent)
+        {
+            var headers = GetHeaders(request.Headers);
+            if (hasContent)
+            {
+                var contentHeaders = GetHeaders(request.Content.Headers);
+                headers = String.Join(newLine, headers, contentHeaders);
+            }
+
+            return ToByteArray(headers + newLine + newLine);
+        }
+        
+        private string GetHeaders(HttpHeaders headers)
         {
             var headersList = new List<string>();
-            var headers = request.Headers;
 
             foreach (var header in headers)
             {
-                if (String.Equals(header.Key, "Content-Length", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
                 string headerKeyAndValue = String.Empty;
                 string[] values = header.Value as string[];
 
@@ -58,7 +65,7 @@ namespace SocksSharp.Proxy.Request
                     string headerValue = headers.GetHeaderString(header.Key);
                     if (!String.IsNullOrEmpty(headerValue))
                     {
-                        headerKeyAndValue = header.Key + ": " + values[0];
+                        headerKeyAndValue = header.Key + ": " + headerValue;
                     }
                 }
 
@@ -68,9 +75,16 @@ namespace SocksSharp.Proxy.Request
                 }
             }
 
-            var rawHeaders = String.Join("\r\n", headersList.ToArray());
+            if (headers is HttpContentHeaders && !headersList.Contains("Content-Length"))
+            {
+                var content = headers as HttpContentHeaders;
+                if(content.ContentLength.HasValue && content.ContentLength.Value > 0)
+                {
+                    headersList.Add($"Content-Length: {content.ContentLength}");
+                }
+            }
 
-            return ToByteArray(rawHeaders + newLine + newLine);
+            return String.Join("\r\n", headersList.ToArray());
         }
 
         private byte[] ToByteArray(string data)

@@ -15,6 +15,11 @@ using SocksSharp.Proxy.Response;
 
 namespace SocksSharp
 {
+    /// <summary>
+    /// Represents <see cref="HttpMessageHandler"/> with <see cref="IProxyClient{T}"/>
+    /// to provide the <see cref="HttpClient"/> support for <see cref="{T}"/> proxy type
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ProxyClientHandler<T> : HttpMessageHandler, IDisposable where T : IProxy
     {
         private readonly IProxyClient<T> proxyClient;
@@ -128,6 +133,7 @@ namespace SocksSharp
         private async Task SendDataAsync(HttpRequestMessage request, CancellationToken ct)
         {
             byte[] buffer;
+            var hasContent = request.Content != null;
             var requestBuilder = new RequestBuilder(request);
 
             //Send starting line
@@ -135,17 +141,19 @@ namespace SocksSharp
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
 
             //Send headers
-            buffer = requestBuilder.BuildHeaders();
+            buffer = requestBuilder.BuildHeaders(hasContent);
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
 
-            //Send Content
-            await SendContentAsync(request, ct);
+            if (hasContent)
+            {
+                await SendContentAsync(request, ct);
+            }
         }
 
         private async Task<HttpResponseMessage> ReceiveDataAsync(HttpRequestMessage request, CancellationToken ct)
         {
             var responseBuilder = new ResponseBuilder(1024);
-            return await responseBuilder.GetResponseAsync(request, connectionNetworkStream, ct);
+            return await responseBuilder.GetResponseAsync(request, connectionCommonStream, ct);
         }
 
         private void CreateConnection(HttpRequestMessage request)
@@ -169,7 +177,7 @@ namespace SocksSharp
                 {
                     if (ex is IOException || ex is AuthenticationException)
                     {
-                         throw new HttpException("Failed SSL connect");
+                         throw new ProxyException("Failed SSL connect");
                     }
 
                     throw;
@@ -183,25 +191,8 @@ namespace SocksSharp
 
         private async Task SendContentAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            if(request.Content == null)
-            {
-                return;
-            }
-
-            int offset = 0;
-            int length = 1024;
             var buffer = await request.Content.ReadAsByteArrayAsync();
-
-            while (offset < buffer.Length)
-            {
-                if (length > buffer.Length - offset)
-                {
-                    length = buffer.Length - offset;
-                }
-
-                await connectionCommonStream.WriteAsync(buffer, offset, length, ct);
-                offset += length;
-            }
+            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
         }
         
         protected override void Dispose(bool disposing)

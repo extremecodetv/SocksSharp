@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Extensions
 {
-    public static class HttpHeadersExtensions
+    internal static class HttpHeadersExtensions
     {
         private static readonly string separator = " ";
-
+        
         public static string GetHeaderString(this HttpHeaders headers, string key)
         {
             if(headers == null)
