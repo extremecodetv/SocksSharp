@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Helpers
 {
-    public static class ContentHelper
+    internal static class ContentHelper
     {
         public static bool IsContentHeader(string name)
         {
