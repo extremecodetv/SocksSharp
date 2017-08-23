@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 
 namespace SocksSharp.Proxy.Request
 {
-    internal class RequestBuilder : IRequestBuilder
+    internal class RequestBuilder
     {
         private readonly string newLine = "\r\n";
 
