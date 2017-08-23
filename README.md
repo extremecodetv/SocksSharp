@@ -30,5 +30,5 @@ using (var proxyClientHandler = new ProxyClientHandler<Socks5>(settings))
 Install as [NuGet package](https://www.nuget.org/packages/SocksSharp/):
 
 ```powershell
-Install-Package SocksSharp -Version 1.0.0-beta-0
+Install-Package SocksSharp
 ```
