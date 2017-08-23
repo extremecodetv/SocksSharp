@@ -65,7 +65,7 @@ namespace SocksSharp.Proxy.Request
                     string headerValue = headers.GetHeaderString(header.Key);
                     if (!String.IsNullOrEmpty(headerValue))
                     {
-                        headerKeyAndValue = header.Key + ": " + values[0];
+                        headerKeyAndValue = header.Key + ": " + headerValue;
                     }
                 }
 
