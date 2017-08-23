@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using SocksSharp.Extensions;
 using SocksSharp.Helpers;
+using System.Net.Http.Headers;
 
 namespace SocksSharp.Proxy.Request
 {
@@ -33,16 +34,22 @@ namespace SocksSharp.Proxy.Request
 
         public byte[] BuildHeaders(bool hasContent)
         {
+            var headers = GetHeaders(request.Headers);
+            if (hasContent)
+            {
+                var contentHeaders = GetHeaders(request.Content.Headers);
+                headers = String.Join(newLine, headers, contentHeaders);
+            }
+
+            return ToByteArray(headers + newLine + newLine);
+        }
+        
+        private string GetHeaders(HttpHeaders headers)
+        {
             var headersList = new List<string>();
-            var headers = request.Headers;
 
             foreach (var header in headers)
             {
-                if (ContentHelper.IsContentHeader(header.Key))
-                {
-                    continue;
-                }
-
                 string headerKeyAndValue = String.Empty;
                 string[] values = header.Value as string[];
 
@@ -68,13 +75,18 @@ namespace SocksSharp.Proxy.Request
                 }
             }
 
-            var rawHeaders = String.Join("\r\n", headersList.ToArray());
+            if (headers is HttpContentHeaders && !headersList.Contains("Content-Length"))
+            {
+                var content = headers as HttpContentHeaders;
+                if(content.ContentLength.HasValue && content.ContentLength.Value > 0)
+                {
+                    headersList.Add($"Content-Length: {content.ContentLength}");
+                }
+            }
 
-            return  hasContent 
-                ? ToByteArray(rawHeaders + newLine) 
-                : ToByteArray(rawHeaders + newLine + newLine);
+            return String.Join("\r\n", headersList.ToArray());
         }
-        
+
         private byte[] ToByteArray(string data)
         {
             return Encoding.ASCII.GetBytes(data);

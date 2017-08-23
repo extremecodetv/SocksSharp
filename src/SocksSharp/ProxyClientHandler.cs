@@ -2,6 +2,7 @@
 using System.IO;
 using System.Web;
 using System.Net;
+using System.Text;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Net.Security;
@@ -139,8 +140,10 @@ namespace SocksSharp
             buffer = requestBuilder.BuildHeaders(hasContent);
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
 
-            //Send Content
-            await SendContentAsync(request, ct);
+            if (hasContent)
+            {
+                await SendContentAsync(request, ct);
+            }
         }
 
         private async Task<HttpResponseMessage> ReceiveDataAsync(HttpRequestMessage request, CancellationToken ct)
@@ -184,25 +187,8 @@ namespace SocksSharp
 
         private async Task SendContentAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            if(request.Content == null)
-            {
-                return;
-            }
-
-            int offset = 0;
-            int length = 1024;
             var buffer = await request.Content.ReadAsByteArrayAsync();
-
-            while (offset < buffer.Length)
-            {
-                if (length > buffer.Length - offset)
-                {
-                    length = buffer.Length - offset;
-                }
-
-                await connectionCommonStream.WriteAsync(buffer, offset, length, ct);
-                offset += length;
-            }
+            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
         }
         
         protected override void Dispose(bool disposing)
