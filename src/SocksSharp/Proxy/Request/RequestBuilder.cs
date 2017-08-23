@@ -70,14 +70,9 @@ namespace SocksSharp.Proxy.Request
 
             var rawHeaders = String.Join("\r\n", headersList.ToArray());
 
-            if (hasContent)
-            {
-                return ToByteArray(rawHeaders + newLine);
-            }
-            else
-            {
-                return ToByteArray(rawHeaders + newLine + newLine);
-            }
+            var response = hasContent 
+                ? ToByteArray(rawHeaders + newLine) 
+                : ToByteArray(rawHeaders + newLine + newLine);
 
         }
         
