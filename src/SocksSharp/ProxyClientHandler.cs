@@ -2,7 +2,6 @@
 using System.IO;
 using System.Web;
 using System.Net;
-using System.Text;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Net.Security;
@@ -16,6 +15,11 @@ using SocksSharp.Proxy.Response;
 
 namespace SocksSharp
 {
+    /// <summary>
+    /// Represents <see cref="HttpMessageHandler"/> with <see cref="IProxyClient{T}"/>
+    /// to provide the <see cref="HttpClient"/> support for <see cref="{T}"/> proxy type
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ProxyClientHandler<T> : HttpMessageHandler, IDisposable where T : IProxy
     {
         private readonly IProxyClient<T> proxyClient;
