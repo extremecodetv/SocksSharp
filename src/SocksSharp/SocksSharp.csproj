@@ -60,7 +60,6 @@
     <Compile Include="Proxy\ProxyException.cs" />
     <Compile Include="Proxy\ProxySettings.cs" />
     <Compile Include="Proxy\Clients\Socks5.cs" />
-    <Compile Include="Proxy\Request\IRequestBuilder.cs" />
     <Compile Include="Proxy\Request\RequestBuilder.cs" />
     <Compile Include="Proxy\Response\IResponseBuilder.cs" />
     <Compile Include="Proxy\Response\ResponseBuilder.cs" />
