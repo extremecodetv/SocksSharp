@@ -177,7 +177,7 @@ namespace SocksSharp
                 {
                     if (ex is IOException || ex is AuthenticationException)
                     {
-                         throw new HttpException("Failed SSL connect");
+                         throw new ProxyException("Failed SSL connect");
                     }
 
                     throw;

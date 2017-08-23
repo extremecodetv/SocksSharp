@@ -288,7 +288,7 @@ namespace SocksSharp.Proxy.Response
             }
             if (version.Length == 0 || statusCode.Length == 0)
             {
-                throw new HttpException("Received empty response");
+                throw new ProxyException("Received empty response");
             }
 
             response.Version = Version.Parse(version);
