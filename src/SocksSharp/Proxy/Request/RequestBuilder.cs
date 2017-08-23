@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SocksSharp.Extensions;
 using SocksSharp.Helpers;
 using System.Net.Http.Headers;
+using System.Net;
 
 namespace SocksSharp.Proxy.Request
 {
@@ -14,10 +15,12 @@ namespace SocksSharp.Proxy.Request
         private readonly string newLine = "\r\n";
 
         private HttpRequestMessage request;
+        private CookieContainer cookies;
 
-        public RequestBuilder(HttpRequestMessage request)
+        public RequestBuilder(HttpRequestMessage request, CookieContainer cookies = null)
         {
             this.request = request;
+            this.cookies = cookies;
         }
 
         public byte[] BuildStartingLine()
@@ -84,9 +87,25 @@ namespace SocksSharp.Proxy.Request
                 }
             }
 
+            if(cookies != null)
+            {
+                var cookiesCollection = cookies.GetCookies(request.RequestUri);
+                var rawCookies = "Cookie: ";
+                
+                foreach(var cookie in cookiesCollection)
+                {
+                    rawCookies += cookie.ToString() + "; ";
+                }
+
+                if(cookiesCollection.Count > 0)
+                {
+                    headersList.Add(rawCookies);
+                }
+            }
+
             return String.Join("\r\n", headersList.ToArray());
         }
-
+        
         private byte[] ToByteArray(string data)
         {
             return Encoding.ASCII.GetBytes(data);
