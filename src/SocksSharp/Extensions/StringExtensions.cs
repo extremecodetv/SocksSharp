@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Extensions
 {
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         /// <summary>
         /// Извлекает подстроку из строки. Подстрока начинается с конца позиции подстроки <paramref name="left"/> и до конца строки. Поиск начинается с заданной позиции.

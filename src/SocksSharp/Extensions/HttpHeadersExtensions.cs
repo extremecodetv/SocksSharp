@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SocksSharp.Extensions
 {
-    public static class HttpHeadersExtensions
+    internal static class HttpHeadersExtensions
     {
         private static readonly string separator = " ";
 
