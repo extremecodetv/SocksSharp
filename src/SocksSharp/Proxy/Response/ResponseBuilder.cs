@@ -45,7 +45,7 @@ namespace SocksSharp.Proxy.Response
 
             public byte[] Value { get; set; }
         }
-        
+
         private sealed class ZipWraperStream : Stream
         {
             #region Поля (закрытые)
@@ -199,7 +199,7 @@ namespace SocksSharp.Proxy.Response
             #endregion
         }
 
-        private static readonly byte[] openHtmlSignature  = Encoding.ASCII.GetBytes("<html");
+        private static readonly byte[] openHtmlSignature = Encoding.ASCII.GetBytes("<html");
         private static readonly byte[] closeHtmlSignature = Encoding.ASCII.GetBytes("</html>");
 
         private readonly string newLine = "\r\n";
@@ -213,15 +213,22 @@ namespace SocksSharp.Proxy.Response
         private HttpResponseMessage response;
         private Dictionary<string, List<string>> contentHeaders;
 
+        private CookieContainer cookies;
+        private Uri uri;
+
         private ReceiveHelper receiveHelper;
 
         private CancellationToken cancellationToken;
 
         public int ReceiveTimeout { get; set; }
 
-        public ResponseBuilder(int bufferSize)
+        public ResponseBuilder(int bufferSize, CookieContainer cookies = null, Uri uri = null)
         {
             this.bufferSize = bufferSize;
+
+            this.cookies = cookies;
+            this.uri = uri;
+
             contentLength = -1;
             receiveHelper = new ReceiveHelper(bufferSize);
         }
@@ -234,10 +241,10 @@ namespace SocksSharp.Proxy.Response
         public Task<HttpResponseMessage> GetResponseAsync(HttpRequestMessage request, Stream stream, CancellationToken cancellationToken)
         {
             this.networkStream = stream as NetworkStream;
-            this.commonStream  = stream;
+            this.commonStream = stream;
 
             this.cancellationToken = cancellationToken;
-            
+
             receiveHelper.Init(stream);
 
             response = new HttpResponseMessage();
@@ -314,9 +321,9 @@ namespace SocksSharp.Proxy.Response
                 string headerName = header.Substring(0, separatorPos);
                 string headerValue = header.Substring(separatorPos + 1).Trim(' ', '\t', '\r', '\n');
 
-                if (headerName.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase))
+                if (cookies != null && headerName.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase))
                 {
-                    //SetCookie(headerValue);
+                    SetCookie(headerValue);
                 }
                 else if (ContentHelper.IsContentHeader(headerName))
                 {
@@ -371,13 +378,90 @@ namespace SocksSharp.Proxy.Response
 
                     throw;
                 }
-                
+
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 response.Content = new StreamContent(memoryStream);
-                foreach(var pair in contentHeaders)
+                foreach (var pair in contentHeaders)
                 {
                     response.Content.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
                 }
+            }
+        }
+
+        private void SetCookie(string value)
+        {
+            if (value.Length == 0)
+            {
+                return;
+            }
+
+            // Ищем позицию, где заканчивается куки и начинается описание его параметров.
+            int endCookiePos = value.IndexOf(';');
+
+            // Ищем позицию между именем и значением куки.
+            int separatorPos = value.IndexOf('=');
+
+            if (separatorPos == -1)
+            {
+                throw new Exception("Invalid cookie");
+            }
+
+            string cookieValue;
+            string cookieName = value.Substring(0, separatorPos);
+
+            if (endCookiePos == -1)
+            {
+                cookieValue = value.Substring(separatorPos + 1);
+            }
+            else
+            {
+                cookieValue = value.Substring(separatorPos + 1,
+                    (endCookiePos - separatorPos) - 1);
+
+                #region Get cookie expires time
+
+                int expiresPos = value.IndexOf("expires=");
+
+                if (expiresPos != -1)
+                {
+                    string expiresStr;
+                    int endExpiresPos = value.IndexOf(';', expiresPos);
+
+                    expiresPos += 8;
+
+                    if (endExpiresPos == -1)
+                    {
+                        expiresStr = value.Substring(expiresPos);
+                    }
+                    else
+                    {
+                        expiresStr = value.Substring(expiresPos, endExpiresPos - expiresPos);
+                    }
+
+                    DateTime expires;
+
+                    // Если время куки вышло, то удаляем её.
+                    if (DateTime.TryParse(expiresStr, out expires) &&
+                        expires < DateTime.Now)
+                    {
+                        var collection = cookies.GetCookies(uri);
+                        collection[cookieName].Expired = true;
+                    }
+                }
+
+                #endregion
+            }
+
+            // Если куки нужно удалить.
+            if (cookieValue.Length == 0 ||
+                cookieValue.Equals("deleted", StringComparison.OrdinalIgnoreCase))
+            {
+                var collection = cookies.GetCookies(uri);
+                collection[cookieName].Expired = true;
+            }
+            else
+            {
+                cookies.Add(new Cookie(cookieName, cookieValue, "/", uri.Host));
             }
         }
 
@@ -431,7 +515,7 @@ namespace SocksSharp.Proxy.Response
 
             if (contentHeaders.TryGetValue("Content-Length", out values))
             {
-                if(Int32.TryParse(values[0], out length))
+                if (Int32.TryParse(values[0], out length))
                 {
                     return length;
                 }
@@ -573,7 +657,7 @@ namespace SocksSharp.Proxy.Response
                 }
             }
         }
-        
+
         // Загрузка тела сообщения частями.
         private IEnumerable<BytesWraper> ReceiveMessageBodyChunked()
         {
@@ -603,7 +687,7 @@ namespace SocksSharp.Proxy.Response
                     if (ex is FormatException || ex is OverflowException)
                     {
                         //throw NewHttpException(string.Format(
-                            //Resources.HttpException_WrongChunkedBlockLength, line), ex);
+                        //Resources.HttpException_WrongChunkedBlockLength, line), ex);
                     }
                     throw;
                 }
@@ -701,7 +785,7 @@ namespace SocksSharp.Proxy.Response
                         if (ex is FormatException || ex is OverflowException)
                         {
                             //throw NewHttpException(string.Format(
-                                //Resources.HttpException_WrongChunkedBlockLength, line), ex);
+                            //Resources.HttpException_WrongChunkedBlockLength, line), ex);
                         }
                         throw;
                     }

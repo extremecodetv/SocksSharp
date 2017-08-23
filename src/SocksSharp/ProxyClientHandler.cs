@@ -119,6 +119,11 @@ namespace SocksSharp
 
             return await Task.Run(async () =>
             {
+                if (UseCookies && CookieContainer == null)
+                {
+                    throw new ArgumentNullException(nameof(CookieContainer));
+                }
+
                 CreateConnection(request);
 
                 await SendDataAsync(request, cancellationToken);
@@ -134,7 +139,10 @@ namespace SocksSharp
         {
             byte[] buffer;
             var hasContent = request.Content != null;
-            var requestBuilder = new RequestBuilder(request);
+
+            var requestBuilder = UseCookies 
+                ? new RequestBuilder(request, CookieContainer) 
+                : new RequestBuilder(request);
 
             //Send starting line
             buffer = requestBuilder.BuildStartingLine();
@@ -152,7 +160,10 @@ namespace SocksSharp
 
         private async Task<HttpResponseMessage> ReceiveDataAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            var responseBuilder = new ResponseBuilder(1024);
+            var responseBuilder = UseCookies 
+                ? new ResponseBuilder(1024, CookieContainer, request.RequestUri)
+                : new ResponseBuilder(1024);
+
             return await responseBuilder.GetResponseAsync(request, connectionCommonStream, ct);
         }
 
