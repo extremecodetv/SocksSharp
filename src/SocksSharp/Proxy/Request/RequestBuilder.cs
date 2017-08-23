@@ -70,9 +70,9 @@ namespace SocksSharp.Proxy.Request
 
             var rawHeaders = String.Join("\r\n", headersList.ToArray());
 
-            return ToByteArray(rawHeaders + newLine + newLine);
+            return ToByteArray(rawHeaders + newLine);
         }
-
+        
         private byte[] ToByteArray(string data)
         {
             return Encoding.ASCII.GetBytes(data);

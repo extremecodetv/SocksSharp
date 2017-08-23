@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Extensions\HttpHeadersExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Helpers\ContentHelper.cs" />
     <Compile Include="Helpers\ExceptionHelper.cs" />
     <Compile Include="Helpers\ReceiveHelper.cs" />
     <Compile Include="Proxy\Clients\Socks4.cs" />
