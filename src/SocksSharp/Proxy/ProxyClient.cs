@@ -6,9 +6,17 @@ using System.Net.Sockets;
 
 namespace SocksSharp.Proxy
 {
+    /// <summary>
+    /// Represents Proxy Client to <see cref="ProxyClientHandler{T}"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ProxyClient<T> : IProxyClient<T> where T : IProxy
     {
-        private T client;        
+        private T client;
+        
+        /// <summary>
+        /// Gets or sets proxy settings for client
+        /// </summary>
         public ProxySettings Settings { get; set; }
                      
         /// <summary>
