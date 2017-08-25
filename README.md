@@ -34,7 +34,7 @@ using (var proxyClientHandler = new ProxyClientHandler<Socks5>(settings))
 }
 ```
 
-Interesting? See more examples
+Interesting? [See more](https://github.com/extremecodetv/SocksSharp/wiki)
 
 ## Contributing
 
