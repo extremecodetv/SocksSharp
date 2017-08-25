@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace SocksSharp.Proxy
 {
@@ -106,5 +107,85 @@ namespace SocksSharp.Proxy
         }
 
         #endregion
+
+        /// <summary>
+        /// Converts the string representation of a <see cref="ProxySettings"/>. 
+        /// A return value indicates whether the conversion succeeded.
+        /// </summary>
+        /// <param name="proxy">A string containing proxy settings</param>
+        /// <param name="proxySettings">When this method returns,
+        /// contains the instance of the <see cref="ProxySettings"/> value equivalent of the number contained in proxy, 
+        /// if the conversion succeeded, or <see cref="null"/> if the conversion failed.</param>
+        /// <returns><see cref="true"/> if s was converted successfully; otherwise, <see cref="false"/>.</returns>
+        /// <remarks>String must be in one of this format 
+        /// host:port
+        /// - or -
+        /// host:port:username
+        /// - or -
+        /// host:port:username:password
+        /// </remarks>
+        public static bool TryParse(string proxy, out ProxySettings proxySettings)
+        {
+            NetworkCredential credential = null;
+
+            proxySettings = null;
+
+            #region Parse Address
+
+            if (String.IsNullOrEmpty(proxy))
+            {
+                return false;
+            }
+
+            string[] values = proxy.Split(':');
+
+            int port = 1080;
+            string host = values[0];
+
+            if (values.Length >= 2)
+            {
+                if (!int.TryParse(values[1], out port))
+                {
+                    return false;
+                }
+            }
+            #endregion
+
+            #region Parse Credential
+
+            string username = String.Empty;
+            string password = String.Empty;
+
+            if (values.Length >= 3)
+            {
+                credential = new NetworkCredential();
+
+                username = values[2];
+
+                if (values.Length >= 4)
+                {
+                    password = values[3];
+                }
+
+                if (!String.IsNullOrEmpty(username))
+                {
+                    credential.UserName = username;
+                }
+
+                if (!String.IsNullOrEmpty(password))
+                {
+                    credential.Password = password;
+                }
+            }
+
+            #endregion
+
+            proxySettings = new ProxySettings();
+            proxySettings.Host = host;
+            proxySettings.Port = port;
+            proxySettings.Credentials = credential;
+
+            return true;
+        }
     }
 }
