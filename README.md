@@ -1,10 +1,11 @@
 # SocksSharp
 
+![SocksSharp](http://i.imgur.com/hh1aZVU.png)
+
+
 [![AppVeyor](https://img.shields.io/appveyor/ci/gruntjs/grunt/master.svg?style=flat-square)](https://ci.appveyor.com/project/extremecodetv/sockssharp/)
 [![NuGet](https://img.shields.io/nuget/v/sockssharp.svg?style=flat-square)](https://www.nuget.org/packages/SocksSharp/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/extremecodetv/SocksSharp/master/LICENSE)
-
-![SocksSharp](http://i.imgur.com/hh1aZVU.png)
 
 
 SocksSharp provides support for Socks4/4a/5 proxy servers to [HttpClient](https://msdn.microsoft.com/en-us/library/system.net.http.httpclient(v=vs.118).aspx)
@@ -16,6 +17,13 @@ Install as [NuGet package](https://www.nuget.org/packages/SocksSharp/):
 ```powershell
 Install-Package SocksSharp
 ```
+
+.NET CLI:
+
+```shell
+dotnet add package SocksSharp
+```
+
 
 ## Basic Usage
 ```C#
