@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SocksSharp provides support for Socks4/4a/5 proxy servers to HttpClient</Description>
+    <Copyright>Copyright © Artem Dontsov, ExtremeCode, 2017</Copyright>
+    <AssemblyTitle>SocksSharp</AssemblyTitle>
+    <VersionPrefix>1.1.0</VersionPrefix>
+    <Authors>Artem Dontsov</Authors>
+    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <AssemblyName>SocksSharp</AssemblyName>
+    <PackageId>SocksSharp</PackageId>
+    <PackageTags>socks5;socks4;socks4a;proxy;httpclient;</PackageTags>
+    <PackageIconUrl>https://camo.githubusercontent.com/ad1cacaaf72d2b7b85b7b35de25f5b30941b1a70/687474703a2f2f692e696d6775722e636f6d2f686831615a56552e706e67</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/extremecodetv/SocksSharp</PackageProjectUrl>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard2.0' ">2.0.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\documentation.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http" Version="4.3.2" />
+  </ItemGroup>
+</Project>
