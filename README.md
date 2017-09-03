@@ -1,4 +1,4 @@
-# SocksSharp [![AppVeyor](https://img.shields.io/appveyor/ci/gruntjs/grunt/master.svg?style=flat-square)](https://ci.appveyor.com/project/extremecodetv/sockssharp/) [![NuGet](https://img.shields.io/nuget/v/sockssharp.svg?style=flat-square)](https://www.nuget.org/packages/SocksSharp/) [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/extremecodetv/SocksSharp/master/LICENSE)
+# SocksSharp [![AppVeyor](https://img.shields.io/appveyor/ci/gruntjs/grunt/master.svg?style=flat-square)](https://ci.appveyor.com/project/extremecodetv/sockssharp/) [![NuGet](https://img.shields.io/nuget/v/sockssharp.svg?style=flat-square)](https://www.nuget.org/packages/SocksSharp/) [![Codacy](https://img.shields.io/codacy/grade/4f1155d09b794eee84578bf4b7f30a95.svg?style=flat-square)](https://www.codacy.com/app/extremecodetv/SocksSharp) [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.githubusercontent.com/extremecodetv/SocksSharp/master/LICENSE)
 
 ![SocksSharp](http://i.imgur.com/hh1aZVU.png)
 
