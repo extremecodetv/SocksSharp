@@ -263,8 +263,7 @@ namespace SocksSharp.Proxy
 
                 default:
                     return 0;
-                    throw new ProxyException(String.Format("Not supported address type",
-                        host, Enum.GetName(typeof(AddressFamily), ipAddr.AddressFamily), ToString()));
+                    throw new ProxyException(String.Format("Not supported address type {0}", host));
             }
 
         }
