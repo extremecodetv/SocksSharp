@@ -47,9 +47,7 @@ namespace SocksSharp.Proxy
         #endregion
 
         public IProxySettings Settings { get; set; }
-
-        public Socks4() { }
-
+        
         /// <summary>
         /// Create connection to destination host via proxy server.
         /// </summary>
@@ -72,7 +70,7 @@ namespace SocksSharp.Proxy
                 throw new ArgumentOutOfRangeException(nameof(destinationPort));
             }
 
-            if (client == null && !client.Connected)
+            if (client == null || !client.Connected)
             {
                 throw new SocketException();
             }

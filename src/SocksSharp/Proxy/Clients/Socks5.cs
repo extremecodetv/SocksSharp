@@ -65,9 +65,7 @@ namespace SocksSharp.Proxy
         #endregion
 
         public IProxySettings Settings { get; set; }
-
-        public Socks5() { }
-
+        
         /// <summary>
         /// Create connection to destination host via proxy server.
         /// </summary>
@@ -90,7 +88,7 @@ namespace SocksSharp.Proxy
                 throw new ArgumentOutOfRangeException(nameof(destinationPort));
             }
 
-            if (client == null && !client.Connected)
+            if (client == null || !client.Connected)
             {
                 throw new SocketException();
             }
@@ -246,7 +244,7 @@ namespace SocksSharp.Proxy
             }
         }
 
-        private byte GetAddressType(string host)
+        private static byte GetAddressType(string host)
         {
             IPAddress ipAddr = null;
 
@@ -265,13 +263,12 @@ namespace SocksSharp.Proxy
 
                 default:
                     return 0;
-                    throw new ProxyException(String.Format("Not supported address type",
-                        host, Enum.GetName(typeof(AddressFamily), ipAddr.AddressFamily), ToString()));
+                    throw new ProxyException(String.Format("Not supported address type {0}", host));
             }
 
         }
 
-        private byte[] GetAddressBytes(byte addressType, string host)
+        private static byte[] GetAddressBytes(byte addressType, string host)
         {
             switch (addressType)
             {

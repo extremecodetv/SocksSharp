@@ -12,7 +12,7 @@ namespace SocksSharp.Proxy
     /// <typeparam name="T"></typeparam>
     public class ProxyClient<T> : IProxyClient<T> where T : IProxy
     {
-        private T client;
+        private readonly T client;
         
         /// <summary>
         /// Gets or sets proxy settings for client

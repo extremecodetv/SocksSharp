@@ -34,8 +34,8 @@ namespace SocksSharp.Helpers
 
         private Stream stream;
 
-        private byte[] buffer;
-        private int bufferSize;
+        private readonly byte[] buffer;
+        private readonly int bufferSize;
 
         private int linePosition;
         private byte[] lineBuffer = new byte[InitialLineSize];
