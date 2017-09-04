@@ -546,7 +546,7 @@ namespace SocksSharp.Proxy.Response
                 10 : ReceiveTimeout;
 
             var dataAvailable = networkStream?.DataAvailable;
-            while (dataAvailable.HasValue && !dataAvailable.Value)
+            while (dataAvailable != null && !dataAvailable.Value)
             {
                 if (sleepTime >= delay)
                 {
