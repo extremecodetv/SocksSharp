@@ -27,6 +27,7 @@ using System.Text;
 using System.Net.Sockets;
 
 using SocksSharp.Helpers;
+using SocksSharp.Core.Helpers;
 
 namespace SocksSharp.Proxy
 {
@@ -99,7 +100,7 @@ namespace SocksSharp.Proxy
         internal protected virtual void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
             byte[] dstPort = GetIPAddressBytes(destinationHost);
-            byte[] dstIp = GetPortBytes(destinationPort);
+            byte[] dstIp = PortHelper.GetPortBytes(destinationPort);
 
             byte[] userId = new byte[0];
             if (Settings.Credentials != null)
@@ -169,17 +170,7 @@ namespace SocksSharp.Proxy
 
             return ipAddr.GetAddressBytes();
         }
-
-        internal protected byte[] GetPortBytes(int port)
-        {
-            byte[] array = new byte[2];
-
-            array[0] = (byte)(port / 256);
-            array[1] = (byte)(port % 256);
-
-            return array;
-        }
-
+        
         internal protected void HandleCommandError(byte command)
         {
             string errorMessage;

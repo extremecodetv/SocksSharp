@@ -27,6 +27,7 @@ using System.Text;
 using System.Net.Sockets;
 
 using SocksSharp.Helpers;
+using SocksSharp.Core.Helpers;
 
 namespace SocksSharp.Proxy
 {
@@ -210,7 +211,7 @@ namespace SocksSharp.Proxy
         {
             byte aTyp = GetAddressType(destinationHost);
             byte[] dstAddr = GetAddressBytes(aTyp, destinationHost);
-            byte[] dstPort = GetPortBytes(destinationPort);
+            byte[] dstPort = PortHelper.GetPortBytes(destinationPort);
 
             // +----+-----+-------+------+----------+----------+
             // |VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |
@@ -287,16 +288,6 @@ namespace SocksSharp.Proxy
                 default:
                     return null;
             }
-        }
-
-        private byte[] GetPortBytes(int port)
-        {
-            byte[] array = new byte[2];
-
-            array[0] = (byte)(port / 256);
-            array[1] = (byte)(port % 256);
-
-            return array;
         }
 
         private void HandleCommandError(byte command)
