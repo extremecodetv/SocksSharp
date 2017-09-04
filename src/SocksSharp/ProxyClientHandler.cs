@@ -203,7 +203,7 @@ namespace SocksSharp
         private async Task SendContentAsync(HttpRequestMessage request, CancellationToken ct)
         {
             var buffer = await request.Content.ReadAsByteArrayAsync();
-            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
+            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct).ConfigureAwait(false);
         }
         
         protected override void Dispose(bool disposing)
