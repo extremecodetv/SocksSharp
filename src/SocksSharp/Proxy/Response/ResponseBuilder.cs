@@ -405,7 +405,7 @@ namespace SocksSharp.Proxy.Response
 
             if (separatorPos == -1)
             {
-                throw new Exception("Invalid cookie");
+                throw new InvalidDataException("Invalid cookie");
             }
 
             string cookieValue;
@@ -546,7 +546,7 @@ namespace SocksSharp.Proxy.Response
                 10 : ReceiveTimeout;
 
             var dataAvailable = networkStream?.DataAvailable;
-            while (dataAvailable.HasValue && !dataAvailable.Value)
+            while (dataAvailable != null && !dataAvailable.Value)
             {
                 if (sleepTime >= delay)
                 {
@@ -702,7 +702,10 @@ namespace SocksSharp.Proxy.Response
                 #endregion
                 // Если достигнут конец тела сообщения.
                 if (blockLength == 0)
+                { 
                     yield break;
+                }
+
                 while (totalBytesRead != blockLength)
                 {
                     int length = blockLength - totalBytesRead;
@@ -777,7 +780,10 @@ namespace SocksSharp.Proxy.Response
                     string line = receiveHelper.ReadLine();
                     // Если достигнут конец блока.
                     if (line == newLine)
+                    { 
                         continue;
+                    }
+
                     line = line.Trim(' ', '\r', '\n');
                     // Если достигнут конец тела сообщения.
                     if (line == string.Empty)
