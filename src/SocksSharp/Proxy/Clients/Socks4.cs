@@ -46,11 +46,7 @@ namespace SocksSharp.Proxy
 
     public class Socks4 : IProxy
     {
-        #region Constants (protected)
-
         internal protected const int DefaultPort = 1080;
-
-        #endregion
 
         public IProxySettings Settings { get; set; }
         
