@@ -29,21 +29,26 @@ using System.Net.Sockets;
 using SocksSharp.Helpers;
 using SocksSharp.Core.Helpers;
 
+using static SocksSharp.Proxy.Socks4Constants;
+
 namespace SocksSharp.Proxy
 {
+    public static class Socks4Constants
+    {
+        public const byte VersionNumber = 4;
+        public const byte CommandConnect = 0x01;
+        public const byte CommandBind = 0x02;
+        public const byte CommandReplyRequestGranted = 0x5a;
+        public const byte CommandReplyRequestRejectedOrFailed = 0x5b;
+        public const byte CommandReplyRequestRejectedCannotConnectToIdentd = 0x5c;
+        public const byte CommandReplyRequestRejectedDifferentIdentd = 0x5d;
+    }
+
     public class Socks4 : IProxy
     {
         #region Constants (protected)
 
         internal protected const int DefaultPort = 1080;
-
-        internal protected const byte VersionNumber = 4;
-        internal protected const byte CommandConnect = 0x01;
-        internal protected const byte CommandBind = 0x02;
-        internal protected const byte CommandReplyRequestGranted = 0x5a;
-        internal protected const byte CommandReplyRequestRejectedOrFailed = 0x5b;
-        internal protected const byte CommandReplyRequestRejectedCannotConnectToIdentd = 0x5c;
-        internal protected const byte CommandReplyRequestRejectedDifferentIdentd = 0x5d;
 
         #endregion
 
