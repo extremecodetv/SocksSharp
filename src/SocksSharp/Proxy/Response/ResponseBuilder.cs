@@ -50,7 +50,7 @@ namespace SocksSharp.Proxy.Response
         {
             #region Поля (закрытые)
 
-            private Stream _baseStream;
+            private readonly Stream _baseStream;
             private readonly ReceiveHelper _receiverHelper;
 
             #endregion
@@ -216,7 +216,7 @@ namespace SocksSharp.Proxy.Response
         private readonly CookieContainer cookies;
         private readonly Uri uri;
 
-        private ReceiveHelper receiveHelper;
+        private readonly ReceiveHelper receiveHelper;
 
         private CancellationToken cancellationToken;
 
