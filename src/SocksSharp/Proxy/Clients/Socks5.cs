@@ -244,7 +244,7 @@ namespace SocksSharp.Proxy
             }
         }
 
-        private byte GetAddressType(string host)
+        private static byte GetAddressType(string host)
         {
             IPAddress ipAddr = null;
 
@@ -269,7 +269,7 @@ namespace SocksSharp.Proxy
 
         }
 
-        private byte[] GetAddressBytes(byte addressType, string host)
+        private static byte[] GetAddressBytes(byte addressType, string host)
         {
             switch (addressType)
             {
