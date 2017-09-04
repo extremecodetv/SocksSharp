@@ -47,9 +47,7 @@ namespace SocksSharp.Proxy
         #endregion
 
         public IProxySettings Settings { get; set; }
-
-        public Socks4() { }
-
+        
         /// <summary>
         /// Create connection to destination host via proxy server.
         /// </summary>
