@@ -15,7 +15,7 @@ namespace SocksSharp.Proxy.Request
         private readonly string newLine = "\r\n";
 
         private readonly HttpRequestMessage request;
-        private CookieContainer cookies;
+        private readonly CookieContainer cookies;
 
 
         public RequestBuilder(HttpRequestMessage request) : this(request, null)
