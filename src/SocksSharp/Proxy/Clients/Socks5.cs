@@ -211,7 +211,7 @@ namespace SocksSharp.Proxy
         {
             byte aTyp = GetAddressType(destinationHost);
             byte[] dstAddr = GetAddressBytes(aTyp, destinationHost);
-            byte[] dstPort = PortHelper.GetPortBytes(destinationPort);
+            byte[] dstPort = HostHelper.GetPortBytes(destinationPort);
 
             // +----+-----+-------+------+----------+----------+
             // |VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |

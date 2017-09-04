@@ -100,7 +100,7 @@ namespace SocksSharp.Proxy
         internal protected virtual void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
             byte[] dstPort = GetIPAddressBytes(destinationHost);
-            byte[] dstIp = PortHelper.GetPortBytes(destinationPort);
+            byte[] dstIp = HostHelper.GetPortBytes(destinationPort);
 
             byte[] userId = new byte[0];
             if (Settings.Credentials != null)

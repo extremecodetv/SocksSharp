@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SocksSharp.Core.Helpers
 {
-    internal static class PortHelper
+    internal static class HostHelper
     {
         public static byte[] GetPortBytes(int port)
         {
