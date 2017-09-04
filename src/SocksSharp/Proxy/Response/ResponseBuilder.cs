@@ -405,7 +405,7 @@ namespace SocksSharp.Proxy.Response
 
             if (separatorPos == -1)
             {
-                throw new Exception("Invalid cookie");
+                throw new InvalidDataException("Invalid cookie");
             }
 
             string cookieValue;
