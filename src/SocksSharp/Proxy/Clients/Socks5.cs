@@ -29,39 +29,45 @@ using System.Net.Sockets;
 using SocksSharp.Helpers;
 using SocksSharp.Core.Helpers;
 
+using static SocksSharp.Proxy.Socks5Constants;
+
 namespace SocksSharp.Proxy
 {
+    public static class Socks5Constants
+    {
+        public const byte VersionNumber = 5;
+        public const byte Reserved = 0x00;
+        public const byte AuthMethodNoAuthenticationRequired = 0x00;
+        public const byte AuthMethodGssapi = 0x01;
+        public const byte AuthMethodUsernamePassword = 0x02;
+        public const byte AuthMethodIanaAssignedRangeBegin = 0x03;
+        public const byte AuthMethodIanaAssignedRangeEnd = 0x7f;
+        public const byte AuthMethodReservedRangeBegin = 0x80;
+        public const byte AuthMethodReservedRangeEnd = 0xfe;
+        public const byte AuthMethodReplyNoAcceptableMethods = 0xff;
+        public const byte CommandConnect = 0x01;
+        public const byte CommandBind = 0x02;
+        public const byte CommandUdpAssociate = 0x03;
+        public const byte CommandReplySucceeded = 0x00;
+        public const byte CommandReplyGeneralSocksServerFailure = 0x01;
+        public const byte CommandReplyConnectionNotAllowedByRuleset = 0x02;
+        public const byte CommandReplyNetworkUnreachable = 0x03;
+        public const byte CommandReplyHostUnreachable = 0x04;
+        public const byte CommandReplyConnectionRefused = 0x05;
+        public const byte CommandReplyTTLExpired = 0x06;
+        public const byte CommandReplyCommandNotSupported = 0x07;
+        public const byte CommandReplyAddressTypeNotSupported = 0x08;
+        public const byte AddressTypeIPV4 = 0x01;
+        public const byte AddressTypeDomainName = 0x03;
+        public const byte AddressTypeIPV6 = 0x04;
+    }
+
     public class Socks5 : IProxy
     {
         #region Constants
 
         private const int DefaultPort = 1080;
 
-        private const byte VersionNumber = 5;
-        private const byte Reserved = 0x00;
-        private const byte AuthMethodNoAuthenticationRequired = 0x00;
-        private const byte AuthMethodGssapi = 0x01;
-        private const byte AuthMethodUsernamePassword = 0x02;
-        private const byte AuthMethodIanaAssignedRangeBegin = 0x03;
-        private const byte AuthMethodIanaAssignedRangeEnd = 0x7f;
-        private const byte AuthMethodReservedRangeBegin = 0x80;
-        private const byte AuthMethodReservedRangeEnd = 0xfe;
-        private const byte AuthMethodReplyNoAcceptableMethods = 0xff;
-        private const byte CommandConnect = 0x01;
-        private const byte CommandBind = 0x02;
-        private const byte CommandUdpAssociate = 0x03;
-        private const byte CommandReplySucceeded = 0x00;
-        private const byte CommandReplyGeneralSocksServerFailure = 0x01;
-        private const byte CommandReplyConnectionNotAllowedByRuleset = 0x02;
-        private const byte CommandReplyNetworkUnreachable = 0x03;
-        private const byte CommandReplyHostUnreachable = 0x04;
-        private const byte CommandReplyConnectionRefused = 0x05;
-        private const byte CommandReplyTTLExpired = 0x06;
-        private const byte CommandReplyCommandNotSupported = 0x07;
-        private const byte CommandReplyAddressTypeNotSupported = 0x08;
-        private const byte AddressTypeIPV4 = 0x01;
-        private const byte AddressTypeDomainName = 0x03;
-        private const byte AddressTypeIPV6 = 0x04;
 
         #endregion
 
