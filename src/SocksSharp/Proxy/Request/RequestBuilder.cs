@@ -17,9 +17,14 @@ namespace SocksSharp.Proxy.Request
         private readonly HttpRequestMessage request;
         private CookieContainer cookies;
 
-        public RequestBuilder(HttpRequestMessage request, CookieContainer cookies = null)
+
+        public RequestBuilder(HttpRequestMessage request) : this(request, null)
         {
             this.request = request;
+        }
+
+        public RequestBuilder(HttpRequestMessage request, CookieContainer cookies)
+        {
             this.cookies = cookies;
         }
 
