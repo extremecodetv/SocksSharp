@@ -52,11 +52,11 @@ namespace SocksSharp.Core.Helpers
         {
             switch (addressType)
             {
-                case AddressTypeIPV4:
-                case AddressTypeIPV6:
+                case Socks5Constants.AddressTypeIPV4:
+                case Socks5Constants.AddressTypeIPV6:
                     return IPAddress.Parse(host).GetAddressBytes();
 
-                case AddressTypeDomainName:
+                case Socks5Constants.AddressTypeDomainName:
                     byte[] bytes = new byte[host.Length + 1];
 
                     bytes[0] = (byte)host.Length;
