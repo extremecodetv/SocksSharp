@@ -127,7 +127,7 @@ namespace SocksSharp
                 CreateConnection(request);
 
                 await SendDataAsync(request, cancellationToken).ConfigureAwait(false);
-                var responseMessage = await ReceiveDataAsync(request, cancellationToken);
+                var responseMessage = await ReceiveDataAsync(request, cancellationToken).ConfigureAwait(false);
 
                 return responseMessage;
             }).ConfigureAwait(false);
@@ -146,15 +146,15 @@ namespace SocksSharp
 
             //Send starting line
             buffer = requestBuilder.BuildStartingLine();
-            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
+            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct).ConfigureAwait(false);
 
             //Send headers
             buffer = requestBuilder.BuildHeaders(hasContent);
-            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct);
+            await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct).ConfigureAwait(false);
 
             if (hasContent)
             {
-                await SendContentAsync(request, ct);
+                await SendContentAsync(request, ct).ConfigureAwait(false);
             }
         }
 
