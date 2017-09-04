@@ -7,7 +7,7 @@ namespace SocksSharp.Helpers
         public static bool IsContentHeader(string name)
         {
             //https://github.com/dotnet/corefx/blob/3e72ee5971db5d0bd46606fa672969adde29e307/src/System.Net.Http/src/System/Net/Http/Headers/KnownHeaders.cs
-            var contentHeaders = new string[]
+            var contentHeaders = new []
             {
                 "Last-Modified",
                 "Expires",
