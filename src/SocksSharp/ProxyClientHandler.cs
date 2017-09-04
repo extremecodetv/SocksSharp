@@ -126,11 +126,11 @@ namespace SocksSharp
 
                 CreateConnection(request);
 
-                await SendDataAsync(request, cancellationToken);
+                await SendDataAsync(request, cancellationToken).ConfigureAwait(false);
                 var responseMessage = await ReceiveDataAsync(request, cancellationToken);
 
                 return responseMessage;
-            });
+            }).ConfigureAwait(false);
         }
 
         #region Methods (private)
