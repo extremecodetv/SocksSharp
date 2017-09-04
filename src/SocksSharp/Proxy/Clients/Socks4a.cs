@@ -24,13 +24,16 @@ using System;
 using System.Text;
 using System.Net.Sockets;
 
+using SocksSharp.Core.Helpers;
+using static SocksSharp.Proxy.Socks4Constants;
+
 namespace SocksSharp.Proxy
 {
     public class Socks4a : Socks4
     {
         internal protected override void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
-            byte[] dstPort = GetPortBytes(destinationPort);
+            byte[] dstPort = HostHelper.GetPortBytes(destinationPort);
             byte[] dstIp = { 0, 0, 0, 1 };
 
             byte[] userId = new byte[0];

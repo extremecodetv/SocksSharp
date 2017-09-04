@@ -27,24 +27,26 @@ using System.Text;
 using System.Net.Sockets;
 
 using SocksSharp.Helpers;
+using SocksSharp.Core.Helpers;
+
+using static SocksSharp.Proxy.Socks4Constants;
 
 namespace SocksSharp.Proxy
 {
+    public static class Socks4Constants
+    {
+        public const byte VersionNumber = 4;
+        public const byte CommandConnect = 0x01;
+        public const byte CommandBind = 0x02;
+        public const byte CommandReplyRequestGranted = 0x5a;
+        public const byte CommandReplyRequestRejectedOrFailed = 0x5b;
+        public const byte CommandReplyRequestRejectedCannotConnectToIdentd = 0x5c;
+        public const byte CommandReplyRequestRejectedDifferentIdentd = 0x5d;
+    }
+
     public class Socks4 : IProxy
     {
-        #region Constants (protected)
-
         internal protected const int DefaultPort = 1080;
-
-        internal protected const byte VersionNumber = 4;
-        internal protected const byte CommandConnect = 0x01;
-        internal protected const byte CommandBind = 0x02;
-        internal protected const byte CommandReplyRequestGranted = 0x5a;
-        internal protected const byte CommandReplyRequestRejectedOrFailed = 0x5b;
-        internal protected const byte CommandReplyRequestRejectedCannotConnectToIdentd = 0x5c;
-        internal protected const byte CommandReplyRequestRejectedDifferentIdentd = 0x5d;
-
-        #endregion
 
         public IProxySettings Settings { get; set; }
         
@@ -98,8 +100,8 @@ namespace SocksSharp.Proxy
 
         internal protected virtual void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
-            byte[] dstPort = GetIPAddressBytes(destinationHost);
-            byte[] dstIp = GetPortBytes(destinationPort);
+            byte[] dstPort = HostHelper.GetIPAddressBytes(destinationHost);
+            byte[] dstIp = HostHelper.GetPortBytes(destinationPort);
 
             byte[] userId = new byte[0];
             if (Settings.Credentials != null)
@@ -140,47 +142,8 @@ namespace SocksSharp.Proxy
                 HandleCommandError(reply);
             }
         }
-
-        internal protected byte[] GetIPAddressBytes(string destinationHost)
-        {
-            IPAddress ipAddr = null;
-
-            if (!IPAddress.TryParse(destinationHost, out ipAddr))
-            {
-                try
-                {
-                    IPAddress[] ips = Dns.GetHostAddresses(destinationHost);
-
-                    if (ips.Length > 0)
-                    {
-                        ipAddr = ips[0];
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex is SocketException || ex is ArgumentException)
-                    {
-                        throw new ProxyException("Failed to get host address", ex);
-                    }
-
-                    throw;
-                }
-            }
-
-            return ipAddr.GetAddressBytes();
-        }
-
-        internal protected byte[] GetPortBytes(int port)
-        {
-            byte[] array = new byte[2];
-
-            array[0] = (byte)(port / 256);
-            array[1] = (byte)(port % 256);
-
-            return array;
-        }
-
-        internal protected void HandleCommandError(byte command)
+                
+        internal protected static void HandleCommandError(byte command)
         {
             string errorMessage;
 

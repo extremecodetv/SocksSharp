@@ -50,7 +50,7 @@ namespace SocksSharp.Proxy.Response
         {
             #region Поля (закрытые)
 
-            private Stream _baseStream;
+            private readonly Stream _baseStream;
             private readonly ReceiveHelper _receiverHelper;
 
             #endregion
@@ -216,7 +216,7 @@ namespace SocksSharp.Proxy.Response
         private readonly CookieContainer cookies;
         private readonly Uri uri;
 
-        private ReceiveHelper receiveHelper;
+        private readonly ReceiveHelper receiveHelper;
 
         private CancellationToken cancellationToken;
 
@@ -309,7 +309,9 @@ namespace SocksSharp.Proxy.Response
                 string header = receiveHelper.ReadLine();
 
                 if (header == newLine)
+                {
                     return;
+                }
 
                 int separatorPos = header.IndexOf(':');
                 if (separatorPos == -1)
@@ -670,11 +672,17 @@ namespace SocksSharp.Proxy.Response
                 string line = receiveHelper.ReadLine();
                 // Если достигнут конец блока.
                 if (line == newLine)
+                {
                     continue;
+                }
+
                 line = line.Trim(' ', '\r', '\n');
                 // Если достигнут конец тела сообщения.
                 if (line == string.Empty)
+                {
                     yield break;
+                }
+
                 int blockLength;
                 int totalBytesRead = 0;
                 #region Задаём длину блока
@@ -773,7 +781,10 @@ namespace SocksSharp.Proxy.Response
                     line = line.Trim(' ', '\r', '\n');
                     // Если достигнут конец тела сообщения.
                     if (line == string.Empty)
+                    { 
                         yield break;
+                    }
+
                     int blockLength;
                     #region Задаём длину блока
                     try
@@ -792,7 +803,10 @@ namespace SocksSharp.Proxy.Response
                     #endregion
                     // Если достигнут конец тела сообщения.
                     if (blockLength == 0)
+                    { 
                         yield break;
+                    }
+
                     streamWrapper.TotalBytesRead = 0;
                     streamWrapper.LimitBytesRead = blockLength;
                     while (true)
