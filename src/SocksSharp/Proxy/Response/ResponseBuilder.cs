@@ -51,7 +51,7 @@ namespace SocksSharp.Proxy.Response
             #region Поля (закрытые)
 
             private Stream _baseStream;
-            private ReceiveHelper _receiverHelper;
+            private readonly ReceiveHelper _receiverHelper;
 
             #endregion
 
