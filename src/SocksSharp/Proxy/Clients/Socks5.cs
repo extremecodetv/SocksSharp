@@ -270,7 +270,7 @@ namespace SocksSharp.Proxy
 
         }
 
-        private void HandleCommandError(byte command)
+        private static void HandleCommandError(byte command)
         {
             string errorMessage;
 

@@ -142,9 +142,8 @@ namespace SocksSharp.Proxy
                 HandleCommandError(reply);
             }
         }
-
-        
-        internal protected void HandleCommandError(byte command)
+                
+        internal protected static void HandleCommandError(byte command)
         {
             string errorMessage;
 
