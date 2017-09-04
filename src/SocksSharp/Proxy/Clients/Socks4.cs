@@ -99,7 +99,7 @@ namespace SocksSharp.Proxy
 
         internal protected virtual void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
-            byte[] dstPort = GetIPAddressBytes(destinationHost);
+            byte[] dstPort = HostHelper.GetIPAddressBytes(destinationHost);
             byte[] dstIp = HostHelper.GetPortBytes(destinationPort);
 
             byte[] userId = new byte[0];
@@ -142,34 +142,6 @@ namespace SocksSharp.Proxy
             }
         }
 
-        internal protected byte[] GetIPAddressBytes(string destinationHost)
-        {
-            IPAddress ipAddr = null;
-
-            if (!IPAddress.TryParse(destinationHost, out ipAddr))
-            {
-                try
-                {
-                    IPAddress[] ips = Dns.GetHostAddresses(destinationHost);
-
-                    if (ips.Length > 0)
-                    {
-                        ipAddr = ips[0];
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex is SocketException || ex is ArgumentException)
-                    {
-                        throw new ProxyException("Failed to get host address", ex);
-                    }
-
-                    throw;
-                }
-            }
-
-            return ipAddr.GetAddressBytes();
-        }
         
         internal protected void HandleCommandError(byte command)
         {

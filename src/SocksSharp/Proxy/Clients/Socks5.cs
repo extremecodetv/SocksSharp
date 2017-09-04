@@ -210,7 +210,7 @@ namespace SocksSharp.Proxy
         private void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
             byte aTyp = GetAddressType(destinationHost);
-            byte[] dstAddr = GetAddressBytes(aTyp, destinationHost);
+            byte[] dstAddr = HostHelper.GetHostAddressBytes(aTyp, destinationHost);
             byte[] dstPort = HostHelper.GetPortBytes(destinationPort);
 
             // +----+-----+-------+------+----------+----------+
@@ -267,27 +267,6 @@ namespace SocksSharp.Proxy
                     throw new ProxyException(String.Format("Not supported address type {0}", host));
             }
 
-        }
-
-        private static byte[] GetAddressBytes(byte addressType, string host)
-        {
-            switch (addressType)
-            {
-                case AddressTypeIPV4:
-                case AddressTypeIPV6:
-                    return IPAddress.Parse(host).GetAddressBytes();
-
-                case AddressTypeDomainName:
-                    byte[] bytes = new byte[host.Length + 1];
-
-                    bytes[0] = (byte)host.Length;
-                    Encoding.ASCII.GetBytes(host).CopyTo(bytes, 1);
-
-                    return bytes;
-
-                default:
-                    return null;
-            }
         }
 
         private void HandleCommandError(byte command)
