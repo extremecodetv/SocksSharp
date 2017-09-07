@@ -3,7 +3,7 @@ using Xunit;
 
 namespace SocksSharp.Tests
 {
-    public class UnitTest1
+    public class ProxyClientTests
     {
         [Fact]
         public void Test1()
