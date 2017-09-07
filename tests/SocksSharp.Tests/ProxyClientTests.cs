@@ -47,6 +47,11 @@ namespace SocksSharp.Tests
             var password = builder["password"];
         }
 
+        private ProxyClientHandler<Socks5> CreateNewSocks5Client()
+        {
+            return new ProxyClientHandler<Socks5>(proxySettings);
+        }
+
         [Fact]
         public void Test1()
         {
