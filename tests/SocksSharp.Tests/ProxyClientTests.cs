@@ -1,11 +1,16 @@
 using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Xunit;
+
+using SocksSharp;
+using SocksSharp.Proxy;
 
 namespace SocksSharp.Tests
 {
     public class ProxyClientTests
     {
+        private ProxySettings proxySettings;
 
         private void GatherTestConfiguration()
         {
@@ -14,6 +19,32 @@ namespace SocksSharp.Tests
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("proxysettings.json")
                 .Build();
+
+            proxySettings = new ProxySettings();
+
+            var host = builder["host"];
+            if (String.IsNullOrEmpty(host))
+            {
+                Debug.WriteLine(String.Format(appConfigMsgWarning, nameof(host)));
+            }
+            else
+            {
+                proxySettings.Host = host;
+            }
+
+            var port = builder["port"];
+            if (String.IsNullOrEmpty(port))
+            {
+                Debug.WriteLine(String.Format(appConfigMsgWarning, nameof(port)));
+            }
+            else
+            {
+                proxySettings.Port = Int32.Parse(port);
+            }
+
+            //TODO: Setup manualy
+            var username = builder["username"];
+            var password = builder["password"];
         }
 
         [Fact]
