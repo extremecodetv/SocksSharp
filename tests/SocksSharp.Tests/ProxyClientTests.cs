@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
 using SocksSharp;
 using SocksSharp.Proxy;
+using System.Threading.Tasks;
 
 namespace SocksSharp.Tests
 {
@@ -58,10 +60,45 @@ namespace SocksSharp.Tests
             return new ProxyClientHandler<Socks5>(proxySettings);
         }
 
-        [Fact]
-        public void Test1()
+        public ProxyClientTests()
         {
+            GatherTestConfiguration();
 
+        }
+
+        [Fact]
+        public async Task TestRequestHeaders()
+        {
+            var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
+
+            var message = new HttpRequestMessage();
+            message.Method = HttpMethod.Get;
+            message.RequestUri = new Uri("http://httpbin.org/user-agent");
+            message.Headers.Add("User-Agent", userAgent);
+
+            var response = await GetResponseMessage(message);
+        }
+
+        private async Task<HttpResponseMessage> GetResponseMessage(HttpRequestMessage requestMessage)
+        {
+            HttpResponseMessage response = null;
+
+            var handler = CreateNewSocks5Client();
+            var client = new HttpClient(handler);
+
+            try
+            {
+                response = await client.SendAsync(requestMessage);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception caught! " + ex.Message);
+            }
+
+            handler.Dispose();
+            client.Dispose();
+
+            return response;
         }
     }
 }
