@@ -49,6 +49,11 @@ namespace SocksSharp.Tests
 
         private ProxyClientHandler<Socks5> CreateNewSocks5Client()
         {
+            if(proxySettings.Host == null || proxySettings.Port == 0)
+            {
+                throw new Exception("Please add your proxy settings to proxysettings.json!");
+            }
+
             return new ProxyClientHandler<Socks5>(proxySettings);
         }
 
