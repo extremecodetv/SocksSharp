@@ -67,7 +67,7 @@ namespace SocksSharp.Tests
         }
 
         [Fact]
-        public async Task TestRequestHeaders()
+        public virtual async Task TestRequestHeaders()
         {
             var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
 
@@ -77,6 +77,9 @@ namespace SocksSharp.Tests
             message.Headers.Add("User-Agent", userAgent);
 
             var response = await GetResponseMessage(message);
+
+            Assert.NotNull(response);
+
         }
 
         private async Task<HttpResponseMessage> GetResponseMessage(HttpRequestMessage requestMessage)
