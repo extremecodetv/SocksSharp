@@ -10,6 +10,7 @@ namespace SocksSharp.Tests
 {
     public class ProxyClientTests
     {
+        private Uri baseUri = new Uri("http://httpbin.org/");
         private ProxySettings proxySettings;
 
         private void GatherTestConfiguration()
