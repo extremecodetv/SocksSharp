@@ -7,25 +7,38 @@ using Xunit;
 using SocksSharp;
 using SocksSharp.Proxy;
 using System.Threading.Tasks;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SocksSharp.Tests
 {
     public class ProxyClientTests
     {
-        private Uri baseUri = new Uri("http://httpbin.org/");
         private ProxySettings proxySettings;
 
         private void GatherTestConfiguration()
         {
+            IConfigurationRoot configuration;
+
             var appConfigMsgWarning = "{0} not configured in proxysettings.json! Some tests may fail.";
 
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile("proxysettings.json")
-                .Build();
+
+            try
+            {
+                configuration = new ConfigurationBuilder()
+                                .AddJsonFile("proxysettings.json")
+                                .Build();
+            }
+            catch(FileNotFoundException)
+            {
+                Debug.WriteLine("proxysettings.json not found in project folder");
+                return;
+            }
 
             proxySettings = new ProxySettings();
 
-            var host = builder["host"];
+            var host = configuration["host"];
             if (String.IsNullOrEmpty(host))
             {
                 Debug.WriteLine(String.Format(appConfigMsgWarning, nameof(host)));
@@ -35,7 +48,7 @@ namespace SocksSharp.Tests
                 proxySettings.Host = host;
             }
 
-            var port = builder["port"];
+            var port = configuration["port"];
             if (String.IsNullOrEmpty(port))
             {
                 Debug.WriteLine(String.Format(appConfigMsgWarning, nameof(port)));
@@ -46,29 +59,25 @@ namespace SocksSharp.Tests
             }
 
             //TODO: Setup manualy
-            var username = builder["username"];
-            var password = builder["password"];
+            var username = configuration["username"];
+            var password = configuration["password"];
         }
 
         private ProxyClientHandler<Socks5> CreateNewSocks5Client()
         {
-            if(proxySettings.Host == null || proxySettings.Port == 0)
-            {
-                throw new Exception("Please add your proxy settings to proxysettings.json!");
-            }
-
             return new ProxyClientHandler<Socks5>(proxySettings);
         }
 
         public ProxyClientTests()
         {
             GatherTestConfiguration();
-
         }
 
         [Fact]
-        public virtual async Task TestRequestHeaders()
+        public virtual async Task RequestHeadersTest()
         {
+            CheckIsConfigured();
+
             var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
 
             var message = new HttpRequestMessage();
@@ -80,6 +89,14 @@ namespace SocksSharp.Tests
 
             Assert.NotNull(response);
 
+            var obj = await Deserialize(response);
+            Assert.Equal(obj.user-agent, userAgent);
+        }
+
+        private async Task<dynamic> Deserialize(HttpResponseMessage response)
+        {
+            var source = await response.Content.ReadAsStringAsync();
+            return JObject.Parse(source);
         }
 
         private async Task<HttpResponseMessage> GetResponseMessage(HttpRequestMessage requestMessage)
@@ -102,6 +119,16 @@ namespace SocksSharp.Tests
             client.Dispose();
 
             return response;
+        }
+
+        private void CheckIsConfigured()
+        {
+            if (proxySettings == null 
+                || proxySettings.Host == null 
+                || proxySettings.Port == 0)
+            {
+                throw new Exception("Please add your proxy settings to proxysettings.json in build folder");
+            }            
         }
     }
 }
