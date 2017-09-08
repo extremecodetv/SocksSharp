@@ -447,7 +447,8 @@ namespace SocksSharp.Proxy.Response
                         expires < DateTime.Now)
                     {
                         var collection = cookies.GetCookies(uri);
-                        collection[cookieName].Expired = true;
+                        if (collection[cookieName] != null)
+                            collection[cookieName].Expired = true;
                     }
                 }
 
@@ -459,7 +460,8 @@ namespace SocksSharp.Proxy.Response
                 cookieValue.Equals("deleted", StringComparison.OrdinalIgnoreCase))
             {
                 var collection = cookies.GetCookies(uri);
-                collection[cookieName].Expired = true;
+                if (collection[cookieName] != null)
+                    collection[cookieName].Expired = true;
             }
             else
             {
@@ -480,7 +482,7 @@ namespace SocksSharp.Proxy.Response
         // Загрузка сжатых данных.
         private IEnumerable<BytesWraper> GetMessageBodySourceZip()
         {
-            if (contentHeaders.ContainsKey("Transfer-Encoding"))
+            if (response.Headers.Contains("Transfer-Encoding"))
             {
                 return ReceiveMessageBodyChunkedZip();
             }
@@ -498,7 +500,7 @@ namespace SocksSharp.Proxy.Response
         // Загрузка обычных данных.
         private IEnumerable<BytesWraper> GetMessageBodySourceStd()
         {
-            if (contentHeaders.ContainsKey("Transfer-Encoding"))
+            if (response.Headers.Contains("Transfer-Encoding"))
             {
                 return ReceiveMessageBodyChunked();
             }
