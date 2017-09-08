@@ -482,7 +482,7 @@ namespace SocksSharp.Proxy.Response
         // Загрузка сжатых данных.
         private IEnumerable<BytesWraper> GetMessageBodySourceZip()
         {
-            if (contentHeaders.ContainsKey("Transfer-Encoding"))
+            if (response.Headers.Contains("Transfer-Encoding"))
             {
                 return ReceiveMessageBodyChunkedZip();
             }
@@ -500,7 +500,7 @@ namespace SocksSharp.Proxy.Response
         // Загрузка обычных данных.
         private IEnumerable<BytesWraper> GetMessageBodySourceStd()
         {
-            if (contentHeaders.ContainsKey("Transfer-Encoding"))
+            if (response.Headers.Contains("Transfer-Encoding"))
             {
                 return ReceiveMessageBodyChunked();
             }
