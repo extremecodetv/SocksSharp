@@ -18,6 +18,7 @@ namespace SocksSharp.Helpers
                 "Content-Length",
                 "Content-Language",
                 "Content-Encoding",
+                "Transfer-Encoding",
                 "Allow"
             };
 
