@@ -447,7 +447,8 @@ namespace SocksSharp.Proxy.Response
                         expires < DateTime.Now)
                     {
                         var collection = cookies.GetCookies(uri);
-                        collection[cookieName].Expired = true;
+                        if (collection[cookieName] != null)
+                            collection[cookieName].Expired = true;
                     }
                 }
 
@@ -459,7 +460,8 @@ namespace SocksSharp.Proxy.Response
                 cookieValue.Equals("deleted", StringComparison.OrdinalIgnoreCase))
             {
                 var collection = cookies.GetCookies(uri);
-                collection[cookieName].Expired = true;
+                if (collection[cookieName] != null)
+                    collection[cookieName].Expired = true;
             }
             else
             {
