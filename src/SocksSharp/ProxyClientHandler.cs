@@ -109,7 +109,7 @@ namespace SocksSharp
         /// </summary>
         /// <param name="request">The HTTP request message.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-        /// <returns></returns>
+        /// <returns>Instance of <see cref="HttpResponseMessage"/> containing http response</returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if(request == null)
