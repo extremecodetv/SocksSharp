@@ -91,7 +91,7 @@ namespace SocksSharp
         /// </summary>
         /// <param name="proxySettings">Proxy settings</param>
         /// <exception cref="ArgumentNullException">
-        /// Value of <see cref="proxySettings"/> is <see langword="null"/>
+        /// Value of parameter is <see langword="null"/>
         /// </exception>
         public ProxyClientHandler(ProxySettings proxySettings)
         {
