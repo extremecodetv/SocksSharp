@@ -55,7 +55,7 @@ namespace SocksSharp.Proxy
         /// </summary>
         /// <param name="destinationHost">Host</param>
         /// <param name="destinationPort">Port</param>
-        /// <param name="tcpClient">Connection with proxy server.</param>
+        /// <param name="client">Connection with proxy server.</param>
         /// <returns>Connection to destination host</returns>
         /// <exception cref="System.ArgumentException">Value of <paramref name="destinationHost"/> is <see langword="null"/> or empty.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Value of <paramref name="destinationPort"/> less than 1 or greater than 65535.</exception>

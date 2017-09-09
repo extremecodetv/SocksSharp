@@ -32,13 +32,13 @@ namespace SocksSharp.Proxy
         /// </summary>
         /// <returns>Destination <see cref="NetworkStream"/></returns>
         /// <exception cref="System.InvalidOperationException">
-        /// Value of <see cref="Host"/> equals <see langword="null"/> or empty.
+        /// Value of <see cref="ProxySettings.Host"/> equals <see langword="null"/> or empty.
         /// -or-
-        /// Value of <see cref="Port"/> less than 1 or greater than 65535.
+        /// Value of <see cref="ProxySettings.Port"/> less than 1 or greater than 65535.
         /// -or-
-        /// Value of <see cref="UserName"/> length greater than 255.
+        /// Value of <see cref="ProxySettings.Credentials"/> username length greater than 255.
         /// -or-
-        /// Value of <see cref="Password"/> length greater than 255.
+        /// Value of <see cref="ProxySettings.Credentials"/> password length greater than 255.
         /// </exception>
         public NetworkStream GetDestinationStream(string destinationHost, int destinationPort)
         {

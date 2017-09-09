@@ -17,7 +17,7 @@ namespace SocksSharp
 {
     /// <summary>
     /// Represents <see cref="HttpMessageHandler"/> with <see cref="IProxyClient{T}"/>
-    /// to provide the <see cref="HttpClient"/> support for <see cref="{T}"/> proxy type
+    /// to provide the <see cref="HttpClient"/> support for <see cref="IProxy"/> proxy type
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class ProxyClientHandler<T> : HttpMessageHandler, IDisposable where T : IProxy
@@ -91,7 +91,7 @@ namespace SocksSharp
         /// </summary>
         /// <param name="proxySettings">Proxy settings</param>
         /// <exception cref="ArgumentNullException">
-        /// Value of <see cref="proxySetting"/> is <see langword="null"/>
+        /// Value of parameter is <see langword="null"/>
         /// </exception>
         public ProxyClientHandler(ProxySettings proxySettings)
         {
@@ -109,7 +109,7 @@ namespace SocksSharp
         /// </summary>
         /// <param name="request">The HTTP request message.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-        /// <returns></returns>
+        /// <returns>Instance of <see cref="HttpResponseMessage"/> containing http response</returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             if(request == null)
