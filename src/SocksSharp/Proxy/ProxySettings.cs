@@ -115,8 +115,9 @@ namespace SocksSharp.Proxy
         /// <param name="proxy">A string containing proxy settings</param>
         /// <param name="proxySettings">When this method returns,
         /// contains the instance of the <see cref="ProxySettings"/> value equivalent of the number contained in proxy, 
-        /// if the conversion succeeded, or <see cref="null"/> if the conversion failed.</param>
-        /// <returns><see cref="true"/> if s was converted successfully; otherwise, <see cref="false"/>.</returns>
+        /// if the conversion succeeded, or <see langword="null"/> if the conversion failed.</param>
+        /// <returns>
+        /// <see langword="true"/> if s was converted successfully; otherwise, <see langword="false"/>.</returns>
         /// <remarks>String must be in one of this format 
         /// host:port
         /// - or -
