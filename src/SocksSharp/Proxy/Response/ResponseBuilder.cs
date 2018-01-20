@@ -344,7 +344,7 @@ namespace SocksSharp.Proxy.Response
                 }
                 else
                 {
-                    response.Headers.Add(headerName, headerValue);
+                    response.Headers.TryAddWithoutValidation(headerName, headerValue);
                 }
 
 
