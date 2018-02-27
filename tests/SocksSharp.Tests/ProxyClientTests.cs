@@ -11,13 +11,14 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Net;
 
 namespace SocksSharp.Tests
 {
     public class ProxyClientTests
     {
         private ProxySettings proxySettings;
-        
+
         public ProxyClientTests()
         {
             GatherTestConfiguration();
@@ -37,7 +38,7 @@ namespace SocksSharp.Tests
             message.RequestUri = new Uri("http://httpbin.org/user-agent");
             message.Headers.Add("User-Agent", userAgent);
 
-            var response = await GetResponseMessage(message);
+            var response = await GetResponseMessageAsync(message);
 
             Assert.NotNull(response);
 
@@ -59,7 +60,7 @@ namespace SocksSharp.Tests
             message.Method = HttpMethod.Get;
             message.RequestUri = new Uri($"http://httpbin.org/get?{key}={value}");
 
-            var response = await GetResponseMessage(message);
+            var response = await GetResponseMessageAsync(message);
 
             var actual = await GetJsonDictionaryValue(response, "args");
 
@@ -79,7 +80,7 @@ namespace SocksSharp.Tests
             message.RequestUri = new Uri("http://httpbin.org/encoding/utf8");
 
 
-            var response = await GetResponseMessage(message);
+            var response = await GetResponseMessageAsync(message);
             var actual = await response.Content.ReadAsStringAsync();
 
             Assert.Contains(excepted, actual);
@@ -97,8 +98,8 @@ namespace SocksSharp.Tests
             var message = new HttpRequestMessage();
             message.Method = HttpMethod.Get;
             message.RequestUri = new Uri("http://httpbin.org/html");
-            
-            var response = await GetResponseMessage(message);
+
+            var response = await GetResponseMessageAsync(message);
 
             var content = response.Content;
             Assert.NotNull(content);
@@ -117,12 +118,12 @@ namespace SocksSharp.Tests
         public async Task DelayTest()
         {
             EnsureIsConfigured();
-            
+
             var message = new HttpRequestMessage();
             message.Method = HttpMethod.Get;
             message.RequestUri = new Uri("http://httpbin.org/delay/4");
 
-            var response = await GetResponseMessage(message);
+            var response = await GetResponseMessageAsync(message);
             var source = response.Content.ReadAsStringAsync();
 
             Assert.NotNull(response);
@@ -138,7 +139,7 @@ namespace SocksSharp.Tests
             message.Method = HttpMethod.Get;
             message.RequestUri = new Uri("http://httpbin.org/stream/20");
 
-            var response = await GetResponseMessage(message);
+            var response = await GetResponseMessageAsync(message);
             var source = response.Content.ReadAsStringAsync();
 
             Assert.NotNull(response);
@@ -156,7 +157,7 @@ namespace SocksSharp.Tests
             message.Method = HttpMethod.Get;
             message.RequestUri = new Uri("http://httpbin.org/gzip");
 
-            var response = await GetResponseMessage(message);
+            var response = await GetResponseMessageAsync(message);
             var acutal = await GetJsonStringValue(response, "Accept-Encoding");
 
             Assert.NotNull(response);
@@ -168,8 +169,8 @@ namespace SocksSharp.Tests
         public async Task CookiesTest()
         {
             EnsureIsConfigured();
-            
-            HttpResponseMessage response = null; 
+
+            HttpResponseMessage response = null;
 
             var name = "name";
             var value = "value";
@@ -214,10 +215,22 @@ namespace SocksSharp.Tests
             message.Method = HttpMethod.Get;
             message.RequestUri = new Uri($"http://httpbin.org/status/{code}");
 
-            var response = await GetResponseMessage(message);
+            var response = await GetResponseMessageAsync(message);
 
             Assert.NotNull(response);
             Assert.Equal(excepted, response.StatusCode.ToString());
+        }
+
+        [Fact]
+        public async Task HttpClient_SendAsync_SetExplicitHostHeader_ShouldNotFail()
+        {
+            var message = new HttpRequestMessage(HttpMethod.Get, "https://httpbin.org/headers");
+            message.Headers.Host = "httpbin.org";
+
+            var response = await GetResponseMessageAsync(message).ConfigureAwait(false);
+
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         #endregion
@@ -307,7 +320,7 @@ namespace SocksSharp.Tests
             return token.ToObject<Dictionary<string, string>>();
         }
 
-        private async Task<HttpResponseMessage> GetResponseMessage(HttpRequestMessage requestMessage)
+        private async Task<HttpResponseMessage> GetResponseMessageAsync(HttpRequestMessage requestMessage)
         {
             HttpResponseMessage response = null;
 
@@ -318,7 +331,7 @@ namespace SocksSharp.Tests
             {
                 response = await client.SendAsync(requestMessage);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine("Exception caught! " + ex.Message);
             }
@@ -331,12 +344,12 @@ namespace SocksSharp.Tests
 
         private void EnsureIsConfigured()
         {
-            if (proxySettings == null 
-                || proxySettings.Host == null 
+            if (proxySettings == null
+                || proxySettings.Host == null
                 || proxySettings.Port == 0)
             {
                 throw new Exception("Please add your proxy settings to proxysettings.json in build folder");
-            }            
+            }
         }
 
         #endregion

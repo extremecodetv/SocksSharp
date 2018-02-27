@@ -18,4 +18,10 @@
     <ProjectReference Include="..\..\src\SocksSharp\SocksSharp.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="proxysettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocksSharp.Core", "src\SocksSharp\SocksSharp.Core.csproj", "{6D0D29F1-A3E8-479B-8B7A-1A246691D76F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocksSharp.Tests", "tests\SocksSharp.Tests\SocksSharp.Tests.csproj", "{45999494-A226-4958-BB58-3ED4A7B29572}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{6D0D29F1-A3E8-479B-8B7A-1A246691D76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D0D29F1-A3E8-479B-8B7A-1A246691D76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D0D29F1-A3E8-479B-8B7A-1A246691D76F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45999494-A226-4958-BB58-3ED4A7B29572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45999494-A226-4958-BB58-3ED4A7B29572}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45999494-A226-4958-BB58-3ED4A7B29572}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45999494-A226-4958-BB58-3ED4A7B29572}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

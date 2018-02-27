@@ -30,10 +30,12 @@ namespace SocksSharp.Proxy.Request
         {
             var uri = request.RequestUri;
 
-            string startingLine
-                    = $"{request.Method.Method} {uri.PathAndQuery} HTTP/{request.Version.ToString()}" + newLine;
+            var startingLine = $"{request.Method.Method} {uri.PathAndQuery} HTTP/{request.Version}" + newLine;
 
-            startingLine += "Host: " + uri.Host + newLine;
+            if (string.IsNullOrEmpty(request.Headers.Host))
+            {
+                startingLine += "Host: " + uri.Host + newLine;
+            }
 
             return ToByteArray(startingLine);
         }
