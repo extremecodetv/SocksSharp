@@ -100,8 +100,8 @@ namespace SocksSharp.Proxy
 
         internal protected virtual void SendCommand(NetworkStream nStream, byte command, string destinationHost, int destinationPort)
         {
-            byte[] dstPort = HostHelper.GetIPAddressBytes(destinationHost);
-            byte[] dstIp = HostHelper.GetPortBytes(destinationPort);
+            var dstIp = HostHelper.GetIPAddressBytes(destinationHost);
+            var dstPort = HostHelper.GetPortBytes(destinationPort);
 
             byte[] userId = new byte[0];
             if (Settings.Credentials != null)
@@ -120,8 +120,8 @@ namespace SocksSharp.Proxy
 
             request[0] = VersionNumber;
             request[1] = command;
-            dstIp.CopyTo(request, 2);
-            dstPort.CopyTo(request, 4);
+            dstPort.CopyTo(request, 2);
+            dstIp.CopyTo(request, 4);
             userId.CopyTo(request, 8);
             request[8 + userId.Length] = 0x00;
 

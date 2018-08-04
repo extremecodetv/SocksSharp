@@ -19,18 +19,28 @@ namespace SocksSharp.Core.Helpers
             return array;
         }
         
-        public static byte[] GetIPAddressBytes(string destinationHost)
+        public static byte[] GetIPAddressBytes(string destinationHost,bool preferIpv4=true)
         {
-            IPAddress ipAddr = null;
-
-            if (!IPAddress.TryParse(destinationHost, out ipAddr))
+            if (!IPAddress.TryParse(destinationHost, out var ipAddr))
             {
                 try
                 {
-                    IPAddress[] ips = Dns.GetHostAddresses(destinationHost);
+                    var ips = Dns.GetHostAddresses(destinationHost);
 
                     if (ips.Length > 0)
                     {
+                        if (preferIpv4)
+                        {
+                            foreach (var ip in ips)
+                            {
+                                var ipBytes = ip.GetAddressBytes();
+                                if (ipBytes.Length == 4)
+                                {
+                                    return ipBytes;
+                                }
+                            }
+                        }
+
                         ipAddr = ips[0];
                     }
                 }
