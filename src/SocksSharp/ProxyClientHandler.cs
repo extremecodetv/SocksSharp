@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using System.IO;
 using System.Web;
 using System.Net;
@@ -8,7 +9,6 @@ using System.Net.Security;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
-
 using SocksSharp.Proxy;
 using SocksSharp.Proxy.Request;
 using SocksSharp.Proxy.Response;
@@ -47,13 +47,13 @@ namespace SocksSharp
         /// <summary>
         /// Gets a value that indicates whether the handler should follow redirection responses.
         /// </summary>
-        public bool AllowAutoRedirect => false;
+        public bool AllowAutoRedirect { get; set; }
 
         /// <summary>
         /// Gets a value that indicates whether the handler supports 
         /// configuration settings for the <see cref="AllowAutoRedirect"/>
         /// </summary>
-        public bool SupportsRedirectConfiguration => false;
+        public bool SupportsRedirectConfiguration => true;
 
         /// <summary>
         /// Gets the type of decompression method used by the handler for automatic 
@@ -95,12 +95,13 @@ namespace SocksSharp
         /// </exception>
         public ProxyClientHandler(ProxySettings proxySettings)
         {
-            if(proxySettings == null)
+            if (proxySettings == null)
             {
                 throw new ArgumentNullException(nameof(proxySettings));
             }
 
-            this.proxyClient = (IProxyClient<T>)Activator.CreateInstance(typeof(ProxyClient<T>));
+            this.proxyClient = (IProxyClient<T>) Activator.CreateInstance(typeof(ProxyClient<T>));
+
             this.proxyClient.Settings = proxySettings;
         }
 
@@ -112,7 +113,7 @@ namespace SocksSharp
         /// <returns>Instance of <see cref="HttpResponseMessage"/> containing http response</returns>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if(request == null)
+            if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
@@ -125,9 +126,17 @@ namespace SocksSharp
                 }
 
                 CreateConnection(request);
-
                 await SendDataAsync(request, cancellationToken).ConfigureAwait(false);
                 var responseMessage = await ReceiveDataAsync(request, cancellationToken).ConfigureAwait(false);
+
+                if ((responseMessage.StatusCode == HttpStatusCode.Moved ||
+                     responseMessage.StatusCode == HttpStatusCode.MovedPermanently ||
+                     responseMessage.StatusCode == HttpStatusCode.Redirect) && AllowAutoRedirect)
+                {
+                    request.RequestUri = responseMessage.Headers.Location;
+
+                    return await SendAsync(request, cancellationToken).ConfigureAwait(false);
+                }
 
                 return responseMessage;
             }).ConfigureAwait(false);
@@ -139,19 +148,17 @@ namespace SocksSharp
         {
             byte[] buffer;
             var hasContent = request.Content != null;
-
-            var requestBuilder = UseCookies 
-                ? new RequestBuilder(request, CookieContainer) 
+            var requestBuilder = UseCookies
+                ? new RequestBuilder(request, CookieContainer)
                 : new RequestBuilder(request);
 
-            //Send starting line
+//Send starting line
             buffer = requestBuilder.BuildStartingLine();
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct).ConfigureAwait(false);
 
-            //Send headers
+//Send headers
             buffer = requestBuilder.BuildHeaders(hasContent);
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct).ConfigureAwait(false);
-
             if (hasContent)
             {
                 await SendContentAsync(request, ct).ConfigureAwait(false);
@@ -160,27 +167,22 @@ namespace SocksSharp
 
         private async Task<HttpResponseMessage> ReceiveDataAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            var responseBuilder = UseCookies 
+            var responseBuilder = UseCookies
                 ? new ResponseBuilder(1024, CookieContainer, request.RequestUri)
                 : new ResponseBuilder(1024);
-
             return await responseBuilder.GetResponseAsync(request, connectionCommonStream, ct);
         }
 
         private void CreateConnection(HttpRequestMessage request)
         {
             Uri uri = request.RequestUri;
-
             connectionNetworkStream = proxyClient.GetDestinationStream(uri.Host, uri.Port);
-
             if (uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
             {
                 try
                 {
                     SslStream sslStream;
-
                     sslStream = new SslStream(connectionNetworkStream, false, ServerCertificateCustomValidationCallback);
-
                     sslStream.AuthenticateAsClient(uri.Host);
                     connectionCommonStream = sslStream;
                 }
@@ -188,7 +190,7 @@ namespace SocksSharp
                 {
                     if (ex is IOException || ex is AuthenticationException)
                     {
-                         throw new ProxyException("Failed SSL connect");
+                        throw new ProxyException("Failed SSL connect");
                     }
 
                     throw;
@@ -205,7 +207,7 @@ namespace SocksSharp
             var buffer = await request.Content.ReadAsByteArrayAsync();
             await connectionCommonStream.WriteAsync(buffer, 0, buffer.Length, ct).ConfigureAwait(false);
         }
-        
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
